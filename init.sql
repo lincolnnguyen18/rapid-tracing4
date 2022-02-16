@@ -1,0 +1,39 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS pictures;
+DROP TABLE IF EXISTS time_records;
+
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  username TEXT NOT NULL UNIQUE,
+  password TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS pictures (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  original BLOB NOT NULL,
+  outline BLOB NOT NULL,
+  details BLOB NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS time_records (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  minutes REAL NOT NULL,
+  trace BLOB NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS user_pictures (
+  user_id INTEGER NOT NULL,
+  picture_id INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (picture_id) REFERENCES pictures(id)
+);
+
+CREATE TABLE IF NOT EXISTS picture_timerecords (
+  picture_id INTEGER NOT NULL,
+  timerecord_id INTEGER NOT NULL,
+  FOREIGN KEY (picture_id) REFERENCES pictures(id),
+  FOREIGN KEY (timerecord_id) REFERENCES time_records(id)
+);
