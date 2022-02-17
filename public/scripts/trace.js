@@ -57,16 +57,13 @@ const file_cleared = () => {
   $upload_dialog_window_header.classList.add('hidden');
   $upload_dialog_upload_button.classList.add('disabled');
 };
-const get_preview = (file) => {
+const get_preview = async (file) => {
   console.log('get_preview called');
+  const formData = new FormData();
+  formData.append('picture', file);
   fetch('/api/get-picture-preview', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      file: file
-    })
+    body: formData
   })
   .then(res => res.json())
   .then(json => console.log(json));
@@ -82,14 +79,7 @@ function handleFile(file) {
     $upload_dialog_placeholder.classList.remove('green');
     return;
   } else {
-    const formData = new FormData();
-    formData.append('picture', file);
-    fetch('/api/get-picture-preview', {
-      method: 'POST',
-      body: formData
-    })
-    .then(res => res.json())
-    .then(json => console.log(json));
+    get_preview(file);
   }
   let old_text = $upload_dialog_placeholder_text.innerHTML;
   $upload_dialog_placeholder_text.innerHTML = 'Uploading...';
