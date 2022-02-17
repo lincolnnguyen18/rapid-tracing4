@@ -93,6 +93,8 @@ router.get('/logout', function (req, res) {
 });
 /* file upload stuff */
 router.post('/get-picture-preview', isLoggedIn, (req, res) => {
+  const size = req.query.size;
+  const sigma = req.query.sigma;
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
@@ -103,7 +105,7 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
       } else {
         const formData = new FormData();
         formData.append('picture', fs.createReadStream(__dirname + '/' + file.name));
-        fetch('http://localhost:3001/get-picture-preview', {
+        fetch(`http://localhost:3001/get-picture-preview?size=${size}&sigma=${sigma}`, {
           method: 'POST',
           body: formData
         })

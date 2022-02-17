@@ -57,11 +57,12 @@ const file_cleared = () => {
   $upload_dialog_window_header.classList.add('hidden');
   $upload_dialog_upload_button.classList.add('disabled');
 };
-const get_preview = async (file) => {
+const get_preview = async (file, size, sigma) => {
   console.log('get_preview called');
+  console.log(size, sigma);
   const formData = new FormData();
   formData.append('picture', file);
-  fetch('/api/get-picture-preview', {
+  fetch('/api/get-picture-preview?size=' + size + '&sigma=' + sigma, {
     method: 'POST',
     body: formData
   })
@@ -69,6 +70,8 @@ const get_preview = async (file) => {
   .then(json => console.log(json));
 }
 
+const $kernel_size_slider = document.querySelectorAll('#kernel-size-slider')[0];
+const $kernel_sigma_slider = document.querySelectorAll('#kernel-sigma-slider')[0];
 function handleFile(file) {
   if (!file.type.match('image.*')) {
     $upload_dialog_message.innerText = 'Invalid image file type';
@@ -78,8 +81,6 @@ function handleFile(file) {
     }, 3000);
     $upload_dialog_placeholder.classList.remove('green');
     return;
-  } else {
-    get_preview(file);
   }
   let old_text = $upload_dialog_placeholder_text.innerHTML;
   $upload_dialog_placeholder_text.innerHTML = 'Uploading...';
@@ -92,6 +93,16 @@ function handleFile(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     $upload_dialog_window_image.src = e.target.result;
+    let image = new Image();
+    image.src = e.target.result;
+    image.onload = () => {
+      console.log(image.width, image.height);
+      $kernel_size_slider.max = Math.min(image.width, image.height);
+      $kernel_size_slider.value = Math.min(image.width, image.height) / 4;
+      $kernel_sigma_slider.max = Math.min(image.width, image.height);
+      $kernel_sigma_slider.value = Math.min(image.width, image.height) / 6;
+      get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+    };
   };
   reader.onloadend = () => {
     $upload_dialog_window_header.classList.remove('disabled');
