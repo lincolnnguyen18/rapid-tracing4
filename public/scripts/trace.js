@@ -34,9 +34,9 @@ $upload_dialog_cancel_button.addEventListener('click', () => {
 $upload_dialog_upload_button.addEventListener('click', () => {
   close_upload_dialog();
 });
-$upload_dialog.addEventListener('click', (e) => {
-  close_upload_dialog();
-});
+// $upload_dialog.addEventListener('click', (e) => {
+//   close_upload_dialog();
+// });
 $upload_dialog_window.addEventListener('click', (e) => {
   e.stopPropagation();
 });
@@ -72,11 +72,44 @@ const get_preview = async (file, size, sigma) => {
   .then(res => res.json())
   .then(json => {
     preview_json = json;
-    $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+    // $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+    switch (selected_button) {
+      case $upload_dialog_header_modes_original_button:
+        $upload_dialog_window_image.src = `/shared/${preview_json.original}`;
+        break;
+      case $upload_dialog_header_modes_outline_button:
+        $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+        break;
+      case $upload_dialog_header_modes_details_button:
+        $upload_dialog_window_image.src = `/shared/${preview_json.details}`;
+        break;
+    }
   });
 }
 const $kernel_size_slider = document.querySelectorAll('#kernel-size-slider')[0];
 const $kernel_sigma_slider = document.querySelectorAll('#kernel-sigma-slider')[0];
+let seconds_since_size_change = 0;
+let last_size_interval = null;
+$kernel_size_slider.addEventListener('input', (e) => {
+  seconds_since_size_change = 0;
+  $upload_dialog_window_image.classList.add('getting-preview');
+  if (last_size_interval)
+    clearInterval(last_size_interval);
+  let interval = setInterval(() => {
+    seconds_since_size_change += 1;
+    console.log(seconds_since_size_change);
+    if (seconds_since_size_change >= 1) {
+      console.log(`kernel size: ${$kernel_size_slider.value}`);
+      get_preview(current_file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+      clearInterval(interval);
+    }
+  }, 1000);
+  last_size_interval = interval;
+});
+$kernel_sigma_slider.addEventListener('input', (e) => {
+  console.log(`kernel sigma: ${$kernel_sigma_slider.value}`);
+  // get_preview(current_file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+});
 function handleFile(file) {
   if (!file.type.match('image.*')) {
     $upload_dialog_message.innerText = 'Invalid image file type';
@@ -100,9 +133,10 @@ function handleFile(file) {
     let image = new Image();
     image.src = e.target.result;
     image.onload = () => {
-      $kernel_size_slider.value = parseInt(Math.min(image.width, image.height) / 33);
+      const max_dimension = 1600;
+      $kernel_size_slider.value = Math.min(parseInt(Math.min(image.width, image.height) / 33), max_dimension / 33);
       $kernel_size_slider.max = parseInt($kernel_size_slider.value * 4);
-      $kernel_sigma_slider.value = parseInt(Math.min(image.width, image.height) / 66);
+      $kernel_sigma_slider.value = Math.min(parseInt(Math.min(image.width, image.height) / 66), max_dimension / 66);
       $kernel_sigma_slider.max = parseInt($kernel_sigma_slider.value * 4);
       get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value).then(() => {
         $upload_dialog_window_image.onload = () => {
@@ -113,6 +147,7 @@ function handleFile(file) {
           $upload_dialog_window_image.classList.remove('hidden');
           $upload_dialog_window_header.classList.remove('hidden');
           $upload_dialog_placeholder.classList.remove('green');
+          $upload_dialog_window_image.classList.remove('getting-preview');
         };
       });
     };
@@ -176,12 +211,12 @@ $upload_dialog_header_modes_details_button.addEventListener('click', () => {
 });
 
 // keydown events
-document.addEventListener('keydown', (e) => {
-  if (e.key == 'Escape') {
-    if (upload_dialog_open)
-      close_upload_dialog();
-  }
-});
+// document.addEventListener('keydown', (e) => {
+//   if (e.key == 'Escape') {
+//     if (upload_dialog_open)
+//       close_upload_dialog();
+//   }
+// });
 
 // logout
 const logout_button = document.querySelectorAll('#logout-button')[0];
