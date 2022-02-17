@@ -1,22 +1,22 @@
 const forms = document.querySelectorAll('form');
 forms.forEach(form => form.addEventListener('submit', e => e.preventDefault()));
 
-const register_link = document.querySelectorAll('#register-link')[0];
-const back_link = document.querySelectorAll('#back-link')[0];
-const login_form = document.querySelectorAll('#login-form')[0];
-const register_form = document.querySelectorAll('#register-form')[0];
+const $register_link = document.querySelectorAll('#register-link')[0];
+const $back_link = document.querySelectorAll('#back-link')[0];
+const $login_form = document.querySelectorAll('#login-form')[0];
+const $register_form = document.querySelectorAll('#register-form')[0];
 
 let mode = 'login';
 
-register_link.addEventListener('click', () => {
-  login_form.classList.toggle('hidden');
-  register_form.classList.toggle('hidden');
+$register_link.addEventListener('click', () => {
+  $login_form.classList.toggle('hidden');
+  $register_form.classList.toggle('hidden');
   mode = 'register';
 });
 
-back_link.addEventListener('click', () => {
-  login_form.classList.toggle('hidden');
-  register_form.classList.toggle('hidden');
+$back_link.addEventListener('click', () => {
+  $login_form.classList.toggle('hidden');
+  $register_form.classList.toggle('hidden');
   mode = 'login';
 });
 

@@ -1,1 +1,34 @@
-TRACE
+<html>
+  <head>
+    <title>Rapid Tracing</title>
+    <link rel="icon" href="/images/logo.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styling/trace.css">
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    <div id="container">
+      <div id="top">
+        <!-- <div id="top-message">New trace!</div> -->
+        <span id="left-time">5:17</span>
+        <progress id="progress" max="100" value="80"></progress>
+        <span id="right-time">7:12</span>
+      </div>
+      <div id="modes">
+        <span id="original-mode">Original</span>
+        <span id="outline-mode">Outline</span>
+        <span id="details-mode">Details</span>
+      </div>
+      <div id="picture"></div>
+      <div id="bottom-left">
+        <span>Done</span>
+      </div>
+      <div id="bottom-right">
+        <span class="material-icons-round">logout</span>
+        <span class="material-icons-round">photo_library</span>
+        <span class="material-icons-round">file_upload</span>
+      </div>
+    </div>
+    <script src="/scripts/trace.js"></script>
+  </body>
+</html>

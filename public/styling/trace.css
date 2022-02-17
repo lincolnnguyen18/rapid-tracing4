@@ -1,0 +1,40 @@
+html, body {
+  background-color: black;
+  color: white;
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+
+#top, #modes {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  max-width: 700px;
+  height: 20px;
+  margin: 20px;
+}
+
+#progress::-webkit-progress-bar {
+  background-color: white;
+  border-radius: 10px;
+}
+
+#progress::-webkit-progress-value {
+  background-color: #888888;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+#picture {
+  width: 500px;
+  height: 80vh;
+  background-color: blue;
+}
