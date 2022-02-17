@@ -202,8 +202,6 @@ html, body {
 }
 
 #upload-dialog-window-image {
-  /* max-height: 300px;
-  max-width: 450px; */
   max-height: 60vh;
   max-width: 80vw;
   border: 2px dashed #888888;
@@ -219,14 +217,20 @@ html, body {
 #upload-dialog-window .dialog-bottom {
   width: 100%;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   gap: 30px;
 }
 
-.dialog-bottom span {
+#upload-dialog-window .dialog-bottom span {
   cursor: pointer;
   user-select: none;
+}
+
+#upload-dialog-window .buttons {
+  display: flex;
+  align-items: center;
+  gap: 30px;
 }
 
 #upload-dialog-upload-button {
@@ -234,7 +238,6 @@ html, body {
   border-radius: 7px;
   padding: 7px 12px;
   color: white;
-  margin-right: 15px;
 }
 
 /* global stuff */

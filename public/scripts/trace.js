@@ -45,6 +45,7 @@ const $upload_dialog_input = document.querySelectorAll('#upload-dialog-input')[0
 const $upload_dialog_placeholder = document.querySelectorAll('#upload-dialog-placeholder')[0];
 const $upload_dialog_window_header = document.querySelectorAll('#upload-dialog-window .dialog-header')[0];
 const $upload_dialog_placeholder_text = document.querySelectorAll('#upload-dialog-placeholder .placeholder-text')[0];
+const $upload_dialog_message = document.querySelectorAll('#upload-dialog-window .dialog-bottom .message')[0];
 const file_added = () => {
   $upload_dialog_placeholder.classList.add('hidden');
   $upload_dialog_window_image.classList.remove('hidden');
@@ -61,21 +62,36 @@ const file_cleared = () => {
 const upload_file = (file) => {
   console.log('upload_file called');
   console.log(file);
+  fetch('/api/upload', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      file: file
+    })
+  })
+  // .then(res => res.json())
+  // .then(res => {
+    
 }
 
 function handleFile(file) {
-  if (current_file) {
-    let old_width = $upload_dialog_window_image.offsetWidth;
-    let old_height = $upload_dialog_window_image.offsetHeight;
-    $upload_dialog_placeholder.style.width = `${old_width}px`;
-    $upload_dialog_placeholder.style.height = `${old_height}px`;
-    $upload_dialog_window_header.classList.add('disabled');
-    $upload_dialog_upload_button.classList.add('disabled');
-    $upload_dialog_window_image.classList.add('hidden');
-    $upload_dialog_placeholder.classList.remove('hidden');
+  if (!file.type.match('image.*')) {
+    $upload_dialog_message.innerText = 'Invalid image file type';
+    $upload_dialog_message.classList.remove('hidden');
+    setTimeout(() => {
+      $upload_dialog_message.classList.add('hidden');
+    }, 3000);
+    $upload_dialog_placeholder.classList.remove('green');
+    return;
   }
   let old_text = $upload_dialog_placeholder_text.innerHTML;
   $upload_dialog_placeholder_text.innerHTML = 'Uploading...';
+  $upload_dialog_window_header.classList.add('disabled');
+  $upload_dialog_upload_button.classList.add('disabled');
+  $upload_dialog_window_image.classList.add('hidden');
+  $upload_dialog_placeholder.classList.remove('hidden');
   current_file = file;
   $upload_dialog_window_image.file = file;
   const reader = new FileReader();
@@ -83,8 +99,6 @@ function handleFile(file) {
     $upload_dialog_window_image.src = e.target.result;
   };
   reader.onloadend = () => {
-    $upload_dialog_placeholder.style.width = '450px';
-    $upload_dialog_placeholder.style.height = '300px';
     $upload_dialog_window_header.classList.remove('disabled');
     $upload_dialog_upload_button.classList.remove('disabled');
     $upload_dialog_placeholder.classList.add('hidden');
