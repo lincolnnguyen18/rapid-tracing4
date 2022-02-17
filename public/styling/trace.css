@@ -118,7 +118,8 @@ html, body {
   display: flex;
   flex-direction: column;
   color: black;
-  padding: 0 20px;
+  padding: 15px;
+  gap: 15px;
 }
 
 #upload-dialog-window .dialog-top {
@@ -130,13 +131,12 @@ html, body {
   width: 100%;
   cursor: pointer;
   user-select: none;
-  margin: 15px 0;
 }
 
 #upload-dialog-header-modes {
   display: flex;
   gap: 50px;
-  margin: 20px 0;
+  margin-bottom: 7px;
   align-items: center;
   justify-content: center;
 }
@@ -222,7 +222,6 @@ html, body {
   justify-content: flex-end;
   align-items: center;
   gap: 30px;
-  padding-bottom: 15px;
 }
 
 .dialog-bottom span {
