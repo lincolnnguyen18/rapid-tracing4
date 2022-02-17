@@ -182,6 +182,7 @@ html, body {
   height: 15px;
   background-color: black;
   border-radius: 50%;
+  cursor: pointer;
 }
 
 #upload-dialog-placeholder {
@@ -199,8 +200,8 @@ html, body {
 #upload-dialog-window-image {
   /* max-height: 300px;
   max-width: 450px; */
-  max-height: 90vh;
-  max-width: 70vw;
+  max-height: 60vh;
+  max-width: 80vw;
   border: 2px dashed #888888;
   padding: 7px;
   border-radius: 7px;
@@ -241,10 +242,14 @@ html, body {
 .disabled {
   opacity: 0.2!important;
   cursor: default!important;
+  user-select: none!important;
+  pointer-events: none!important;
 }
 
 .disabled * {
   cursor: default!important;
+  user-select: none!important;
+  pointer-events: none!important;
 }
 
 .green {

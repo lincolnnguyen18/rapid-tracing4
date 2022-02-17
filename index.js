@@ -11,7 +11,9 @@ app.use(cookieParser());
 app.use(express.static('public'));
 
 const isLoggedIn = (req, res, next) => {
+  console.log(req.cookies);
   const token = req.cookies.token;
+  console.log(`token: ${token}`);
   if (token) {
     jwt.verify(token, 'Ln2121809', (err, decoded) => {
       if (!err) {
@@ -94,5 +96,20 @@ app.get('/', isLoggedIn, (req, res) => {
 app.get('/login', isNotLoggedIn, (req, res) => {
   res.sendFile(__dirname + '/pages/login.html');
 });
+
+/* file upload stuff */
+const file_upload = require('express-fileupload');
+app.use(file_upload());
+router.post('/upload', isLoggedIn, (req, res) => {
+  if (req.files && req.files.picture) {
+    let file = req.files.picture;
+    console.log(file);
+    res.send({ message: 'OK' });
+  } else {
+    res.send({ error: 'Error uploading file.' });
+  }
+});
+
+
 const port = 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));

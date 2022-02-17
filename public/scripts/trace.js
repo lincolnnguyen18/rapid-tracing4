@@ -6,12 +6,14 @@ const upload_dialog = document.querySelectorAll('#upload-dialog')[0];
 const upload_dialog_window = document.querySelectorAll('#upload-dialog-window')[0];
 const upload_button = document.querySelectorAll('#upload-button')[0];
 const upload_dialog_cancel_button = document.querySelectorAll('#upload-dialog-cancel-button')[0];
+const upload_dialog_upload_button = document.querySelectorAll('#upload-dialog-upload-button')[0];
 let upload_dialog_open = false;
 const open_upload_dialog = () => {
   upload_dialog.classList.remove('hidden');
   upload_dialog_open = true;
 };
 const close_upload_dialog = () => {
+  upload_dialog.classList.add('hidden');
   upload_dialog_open = false;
   upload_dialog_input.value = '';
   current_file = null;
@@ -25,6 +27,12 @@ upload_button.addEventListener('click', () => {
 upload_dialog_cancel_button.addEventListener('click', () => {
   close_upload_dialog();
 });
+upload_dialog_upload_button.addEventListener('click', () => {
+  if (current_file) {
+    upload_file(current_file);
+    close_upload_dialog();
+  }
+});
 upload_dialog.addEventListener('click', (e) => {
   close_upload_dialog();
 });
@@ -36,17 +44,25 @@ upload_dialog_window.addEventListener('click', (e) => {
 const upload_dialog_window_image = document.querySelectorAll('#upload-dialog-window-image')[0];
 const upload_dialog_input = document.querySelectorAll('#upload-dialog-input')[0];
 const upload_dialog_placeholder = document.querySelectorAll('#upload-dialog-placeholder')[0];
+const upload_dialog_window_header = document.querySelectorAll('#upload-dialog-window .dialog-header')[0];
 let dropbox = document.querySelectorAll('#upload-dialog-window .dialog-top')[0];
 const file_added = () => {
   upload_dialog_placeholder.classList.add('hidden');
   upload_dialog_window_image.classList.remove('hidden');
   upload_dialog_placeholder.classList.remove('green');
+  upload_dialog_window_header.classList.remove('disabled');
+  upload_dialog_upload_button.classList.remove('disabled');
 };
 const file_cleared = () => {
-  upload_dialog.classList.add('hidden');
   upload_dialog_placeholder.classList.remove('hidden');
   upload_dialog_window_image.classList.add('hidden');
+  upload_dialog_window_header.classList.add('disabled');
 };
+const upload_file = (file) => {
+  console.log('upload_file called');
+  console.log(file);
+}
+
 function handleFile(file) {
   current_file = file;
   console.log(file);
@@ -61,8 +77,6 @@ function handleFile(file) {
 function dragenter(e) {
   e.stopPropagation();
   e.preventDefault();
-  // upload_dialog_placeholder.style.color = 'green';
-  // upload_dialog_placeholder.style.borderColor = 'green';
   upload_dialog_placeholder.classList.add('green');
 }
 function dragover(e) {
