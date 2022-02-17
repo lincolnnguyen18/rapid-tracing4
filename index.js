@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(file_upload());
 app.use(express.static('public'));
+app.use("/shared", express.static("shared"));
 
 const isLoggedIn = (req, res, next) => {
   const token = req.cookies.token;
@@ -104,9 +105,6 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
         console.log(err);
         res.send({ error: 'Error uploading file.' });
       } else {
-        // const formData = new FormData();
-        // console.log(temp_name);
-        // formData.append('picture', fs.createReadStream(__dirname + '/' + temp_name));
         fetch(`http://localhost:3001/get-picture-preview?size=${size}&sigma=${sigma}`, {
           method: 'POST',
           headers: {
@@ -119,12 +117,17 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
         .then(res => res.json())
         .then(json => {
           console.log(json);
-          // fs.unlink(__dirname + '/' + temp_name, function(err) {
-          //   if (err) {
-          //     console.log(err);
-          //   }
-          // });
-          res.send({ message: 'OK' });
+          // setTimeout(() => {
+          //   let filenames = [json.original, json.outline, json.details];
+          //   filenames.forEach(filename => {
+          //     fs.unlink(__dirname + '/shared/' + filename, function(err) {
+          //       if (err) {
+          //         console.log(err);
+          //       }
+          //     });
+          //   });
+          // }, 3000);
+          res.send(json);
         });
       }
     });

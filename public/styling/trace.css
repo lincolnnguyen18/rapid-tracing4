@@ -262,3 +262,7 @@ html, body {
   color: green!important;
   border-color: green!important;
 }
+
+div#container.blurred * {
+  filter: blur(4px);
+}

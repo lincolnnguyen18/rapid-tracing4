@@ -7,13 +7,16 @@ const $upload_dialog_window = document.querySelectorAll('#upload-dialog-window')
 const $upload_button = document.querySelectorAll('#upload-button')[0];
 const $upload_dialog_cancel_button = document.querySelectorAll('#upload-dialog-cancel-button')[0];
 const $upload_dialog_upload_button = document.querySelectorAll('#upload-dialog-upload-button')[0];
+const $container = document.querySelectorAll('#container')[0];
 let upload_dialog_open = false;
 const open_upload_dialog = () => {
   $upload_dialog.classList.remove('hidden');
+  $container.classList.add('blurred');
   upload_dialog_open = true;
 };
 const close_upload_dialog = () => {
   $upload_dialog.classList.add('hidden');
+  $container.classList.remove('blurred');
   upload_dialog_open = false;
   $upload_dialog_input.value = '';
   current_file = null;
