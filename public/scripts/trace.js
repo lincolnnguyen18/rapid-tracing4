@@ -45,6 +45,7 @@ const upload_dialog_window_image = document.querySelectorAll('#upload-dialog-win
 const upload_dialog_input = document.querySelectorAll('#upload-dialog-input')[0];
 const upload_dialog_placeholder = document.querySelectorAll('#upload-dialog-placeholder')[0];
 const upload_dialog_window_header = document.querySelectorAll('#upload-dialog-window .dialog-header')[0];
+const upload_dialog_placeholder_text = document.querySelectorAll('#upload-dialog-placeholder .placeholder-text')[0];
 let dropbox = document.querySelectorAll('#upload-dialog-window .dialog-top')[0];
 const file_added = () => {
   upload_dialog_placeholder.classList.add('hidden');
@@ -57,6 +58,7 @@ const file_cleared = () => {
   upload_dialog_placeholder.classList.remove('hidden');
   upload_dialog_window_image.classList.add('hidden');
   upload_dialog_window_header.classList.add('disabled');
+  upload_dialog_upload_button.classList.add('disabled');
 };
 const upload_file = (file) => {
   console.log('upload_file called');
@@ -64,15 +66,18 @@ const upload_file = (file) => {
 }
 
 function handleFile(file) {
+  let old_text = upload_dialog_placeholder_text.innerHTML;
+  upload_dialog_placeholder_text.innerHTML = 'Uploading...';
   current_file = file;
   console.log(file);
   upload_dialog_window_image.file = file;
   const reader = new FileReader();
   reader.onload = (e) => {
     upload_dialog_window_image.src = e.target.result;
+    file_added();
+    upload_dialog_placeholder_text.innerHTML = old_text;
   };
   reader.readAsDataURL(file);
-  file_added();
 }
 function dragenter(e) {
   e.stopPropagation();
