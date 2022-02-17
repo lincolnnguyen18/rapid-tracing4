@@ -3,8 +3,11 @@ var db = new sqlite3.Database('data.db');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const file_upload = require('express-fileupload');
+const fetch = require('node-fetch');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const FormData = require('form-data');
+const fs = require('fs');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -91,7 +94,6 @@ router.get('/logout', function (req, res) {
 /* file upload stuff */
 router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
-  console.log(req.files);
   if (req.files && req.files.picture) {
     let file = req.files.picture;
     file.mv(__dirname + '/' + file.name, function(err) {
@@ -99,7 +101,22 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
         console.log(err);
         res.send({ error: 'Error uploading file.' });
       } else {
-        res.send({ message: 'OK' });
+        const formData = new FormData();
+        formData.append('picture', fs.createReadStream(__dirname + '/' + file.name));
+        fetch('http://localhost:3001/get-picture-preview', {
+          method: 'POST',
+          body: formData
+        })
+        .then(res => res.json())
+        .then(json => {
+          console.log(json);
+          fs.unlink(__dirname + '/' + file.name, function(err) {
+            if (err) {
+              console.log(err);
+            }
+          });
+          res.send({ message: 'OK' });
+        });
       }
     });
   } else {
