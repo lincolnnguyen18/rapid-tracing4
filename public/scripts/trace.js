@@ -1,5 +1,6 @@
 const body = document.querySelectorAll('body')[0];
 let current_file = null;
+let preview_json = null;
 
 // upload dialog window
 const $upload_dialog = document.querySelectorAll('#upload-dialog')[0];
@@ -70,9 +71,12 @@ const get_preview = async (file, size, sigma) => {
     body: formData
   })
   .then(res => res.json())
-  .then(json => console.log(json));
+  .then(json => {
+    console.log(json);
+    preview_json = json;
+    $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+  });
 }
-
 const $kernel_size_slider = document.querySelectorAll('#kernel-size-slider')[0];
 const $kernel_sigma_slider = document.querySelectorAll('#kernel-sigma-slider')[0];
 function handleFile(file) {
@@ -95,7 +99,6 @@ function handleFile(file) {
   $upload_dialog_window_image.file = file;
   const reader = new FileReader();
   reader.onload = (e) => {
-    $upload_dialog_window_image.src = e.target.result;
     let image = new Image();
     image.src = e.target.result;
     image.onload = () => {
@@ -104,16 +107,25 @@ function handleFile(file) {
       $kernel_size_slider.max = parseInt($kernel_size_slider.value * 4);
       $kernel_sigma_slider.value = parseInt(Math.min(image.width, image.height) / 66);
       $kernel_sigma_slider.max = parseInt($kernel_sigma_slider.value * 4);
-      get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+      get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value).then(() => {
+        $upload_dialog_window_image.onload = () => {
+          $upload_dialog_window_header.classList.remove('disabled');
+          $upload_dialog_upload_button.classList.remove('disabled');
+          $upload_dialog_placeholder.classList.add('hidden');
+          $upload_dialog_placeholder_text.innerHTML = old_text;
+          $upload_dialog_window_image.classList.remove('hidden');
+          $upload_dialog_window_header.classList.remove('hidden');
+        };
+        // $upload_dialog_window_image.onloadend = () => {
+        //   $upload_dialog_window_header.classList.remove('disabled');
+        //   $upload_dialog_upload_button.classList.remove('disabled');
+        //   $upload_dialog_placeholder.classList.add('hidden');
+        //   $upload_dialog_placeholder_text.innerHTML = old_text;
+        //   $upload_dialog_window_image.classList.remove('hidden');
+        // };
+        // file_added();
+      });
     };
-  };
-  reader.onloadend = () => {
-    $upload_dialog_window_header.classList.remove('disabled');
-    $upload_dialog_upload_button.classList.remove('disabled');
-    $upload_dialog_placeholder.classList.add('hidden');
-    $upload_dialog_placeholder_text.innerHTML = old_text;
-    $upload_dialog_window_image.classList.remove('hidden');
-    file_added();
   };
   reader.readAsDataURL(file);
 }
@@ -148,6 +160,13 @@ $dropbox.addEventListener('dragenter', dragenter, false);
 $dropbox.addEventListener('dragover', dragover, false);
 $dropbox.addEventListener('drop', drop, false);
 $dropbox.addEventListener('dragleave', dragleave, false);
+
+// upload dialog mode buttons
+const $upload_dialog_header_modes_original_button = document.querySelectorAll('#upload-dialog-header-modes-original-button')[0];
+const $upload_dialog_header_modes_outline_button = document.querySelectorAll('#upload-dialog-header-modes-outline-button')[0];
+const $upload_dialog_header_modes_details_button = document.querySelectorAll('#upload-dialog-header-modes-details-button')[0];
+// $upload_dialog_header_modes_original_button.addEventListener('click', () => {
+
 // keydown events
 document.addEventListener('keydown', (e) => {
   if (e.key == 'Escape') {
@@ -156,7 +175,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-/* logout */
+// logout
 const logout_button = document.querySelectorAll('#logout-button')[0];
 logout_button.addEventListener('click', () => {
   fetch('/api/logout', {
