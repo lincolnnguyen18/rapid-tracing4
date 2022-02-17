@@ -98,25 +98,32 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
-    file.mv(__dirname + '/' + file.name, function(err) {
+    const temp_name = Math.random().toString(36).substring(7) + file.name.substring(file.name.lastIndexOf('.'));
+    file.mv(__dirname + '/shared/' + temp_name, function(err) {
       if (err) {
         console.log(err);
         res.send({ error: 'Error uploading file.' });
       } else {
-        const formData = new FormData();
-        formData.append('picture', fs.createReadStream(__dirname + '/' + file.name));
+        // const formData = new FormData();
+        // console.log(temp_name);
+        // formData.append('picture', fs.createReadStream(__dirname + '/' + temp_name));
         fetch(`http://localhost:3001/get-picture-preview?size=${size}&sigma=${sigma}`, {
           method: 'POST',
-          body: formData
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            filename: temp_name
+          })
         })
         .then(res => res.json())
         .then(json => {
           console.log(json);
-          fs.unlink(__dirname + '/' + file.name, function(err) {
-            if (err) {
-              console.log(err);
-            }
-          });
+          // fs.unlink(__dirname + '/' + temp_name, function(err) {
+          //   if (err) {
+          //     console.log(err);
+          //   }
+          // });
           res.send({ message: 'OK' });
         });
       }

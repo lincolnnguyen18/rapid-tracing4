@@ -97,10 +97,10 @@ function handleFile(file) {
     image.src = e.target.result;
     image.onload = () => {
       console.log(image.width, image.height);
-      $kernel_size_slider.max = Math.min(image.width, image.height);
-      $kernel_size_slider.value = Math.min(image.width, image.height) / 4;
-      $kernel_sigma_slider.max = Math.min(image.width, image.height);
-      $kernel_sigma_slider.value = Math.min(image.width, image.height) / 6;
+      $kernel_size_slider.value = parseInt(Math.min(image.width, image.height) / 33);
+      $kernel_size_slider.max = parseInt($kernel_size_slider.value * 4);
+      $kernel_sigma_slider.value = parseInt(Math.min(image.width, image.height) / 66);
+      $kernel_sigma_slider.max = parseInt($kernel_sigma_slider.value * 4);
       get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value);
     };
   };
