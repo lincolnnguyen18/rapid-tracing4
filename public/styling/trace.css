@@ -21,7 +21,7 @@ html, body {
   appearance: none;
   width: 100%;
   max-width: 700px;
-  height: 20px;
+  height: 12px;
   margin: 20px;
 }
 
@@ -62,11 +62,15 @@ html, body {
   margin-top: 20px;
 }
 
-
-#bottom-left > span {
+#bottom-left {
   position: absolute;
   bottom: 10px;
   left: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+#bottom-left span {
   background-color: white;
   border-radius: 7px;
   padding: 7px;
@@ -128,16 +132,44 @@ html, body {
 
 #upload-dialog-window .dialog-top {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   width: 100%;
+  cursor: pointer;
+  user-select: none;
+}
+
+#upload-dialog-placeholder {
+  display: flex;
+  flex-direction: column;
+  width: 450px;
+  height: 300px;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #888888;
+  border-radius: 7px;
+  color: #888888;
+}
+
+#upload-dialog-window-image {
+  max-height: 300px;
+  max-width: 450px;
+  border: 2px dashed #888888;
+  padding: 7px;
+  border-radius: 7px;
+}
+
+#upload-dialog-window-icon {
+  font-size: 100px;
+  user-select: none;
 }
 
 #upload-dialog-window .dialog-bottom {
   width: 100%;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
   gap: 30px;
   padding-bottom: 15px;

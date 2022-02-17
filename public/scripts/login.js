@@ -20,17 +20,17 @@ $back_link.addEventListener('click', () => {
   mode = 'login';
 });
 
-const login_button = document.querySelectorAll('#login-button')[0];
-const register_button = document.querySelectorAll('#register-button')[0];
-const login_error = document.querySelectorAll('#login-error')[0];
-const register_error = document.querySelectorAll('#register-error')[0];
+const $login_button = document.querySelectorAll('#login-button')[0];
+const $register_button = document.querySelectorAll('#register-button')[0];
+const $login_error = document.querySelectorAll('#login-error')[0];
+const $register_error = document.querySelectorAll('#register-error')[0];
 
 const display_error = (text) => {
   error = null;
   if (mode == 'login') {
-    error = login_error;
+    error = $login_error;
   } else {
-    error = register_error;
+    error = $register_error;
   }
   error.innerHTML = text;
   error.classList.remove('hidden');
@@ -39,7 +39,7 @@ const display_error = (text) => {
   }, 3000);
 };
 
-login_button.addEventListener('click', () => {
+$login_button.addEventListener('click', () => {
   let username = document.querySelectorAll('#login-username-input')[0].value;
   let password = document.querySelectorAll('#login-password-input')[0].value;
   let data = { username, password };
@@ -60,7 +60,7 @@ login_button.addEventListener('click', () => {
   });
 });
 
-register_button.addEventListener('click', () => {
+$register_button.addEventListener('click', () => {
   let username = document.querySelectorAll('#register-username-input')[0].value;
   let password = document.querySelectorAll('#register-password-input')[0].value;
   let confirm_password = document.querySelectorAll('#register-confirm-password-input')[0].value;

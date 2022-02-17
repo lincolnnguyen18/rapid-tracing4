@@ -63,6 +63,7 @@ form .form-input {
   padding: 7px 12px;
   border-radius: 7px;
   margin-top: 3px;
+  border: none;
 }
 
 .form-inputs {

@@ -9,9 +9,14 @@
   <body>
     <div id="upload-dialog" class="dialog hidden">
       <div id="upload-dialog-window" class="dialog-window">
-        <div class="dialog-top">
-          <span>Drag and drop a picture here</span>
-        </div>
+        <label class="dialog-top" for="upload-dialog-input">
+          <div id="upload-dialog-placeholder">
+            <span class="material-icons-round" id="upload-dialog-window-icon">image</span>
+            <span>Drag and drop a picture here or click to upload</span>
+            <input type="file" id="upload-dialog-input" accept="image/*" class="hidden">
+          </div>
+          <img id="upload-dialog-window-image" class="hidden" src="">
+        </label>
         <div class="dialog-bottom">
           <span id="upload-dialog-cancel-button">Cancel</span>
           <span id="upload-dialog-upload-button" class="disabled">Upload</span>
@@ -31,13 +36,14 @@
     </div>
     <div id="picture"></div>
     <div id="bottom-left">
+      <span>Stop</span>
       <span>Done</span>
     </div>
     <div id="bottom-right">
-      <span class="material-icons-round" id="logout-button">logout</span>
-      <span class="material-icons-round" id="delete-button">delete</span>
-      <span class="material-icons-round" id="pictures-button">photo_library</span>
       <span class="material-icons-round" id="upload-button">file_upload</span>
+      <span class="material-icons-round" id="pictures-button">photo_library</span>
+      <span class="material-icons-round" id="delete-button">delete</span>
+      <span class="material-icons-round" id="logout-button">logout</span>
     </div>
     <script src="/scripts/trace.js"></script>
   </body>
