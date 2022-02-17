@@ -46,7 +46,7 @@ html, body {
   user-select: none;
 }
 
-.selected-mode {
+#modes .selected-mode {
   color: black;
   background-color: white;
   padding: 7px;
@@ -97,15 +97,6 @@ html, body {
   user-select: none;
 }
 
-.hidden {
-  display: none!important;
-}
-
-.disabled {
-  opacity: 0.2;
-  cursor: default!important;
-}
-
 .dialog {
   position: absolute;
   top: 0;
@@ -120,14 +111,14 @@ html, body {
 }
 
 .dialog-window {
-  width: 500px;
-  height: 400px;
+  /* width: 500px;
+  height: 400px; */
   background-color: white;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   color: black;
+  padding: 0 20px;
 }
 
 #upload-dialog-window .dialog-top {
@@ -139,6 +130,58 @@ html, body {
   width: 100%;
   cursor: pointer;
   user-select: none;
+  margin: 15px 0;
+}
+
+#upload-dialog-header-modes {
+  display: flex;
+  gap: 50px;
+  margin: 20px 0;
+  align-items: center;
+  justify-content: center;
+}
+
+#upload-dialog-header-modes span {
+  cursor: pointer;
+  user-select: none;
+}
+
+#upload-dialog-header-modes .selected-mode {
+  color: white;
+  background-color: black;
+  padding: 7px;
+  border-radius: 7px;
+  font-weight: bold;
+}
+
+#upload-dialog-header-sliders {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+#upload-dialog-header-sliders > div {
+  width: 100%;
+}
+
+#upload-dialog-header-sliders input {
+  margin-top: 6px;
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 7px;
+  background: #888888;
+  border-radius: 7px;
+}
+
+#upload-dialog-header-sliders input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background-color: black;
+  border-radius: 50%;
 }
 
 #upload-dialog-placeholder {
@@ -154,8 +197,10 @@ html, body {
 }
 
 #upload-dialog-window-image {
-  max-height: 300px;
-  max-width: 450px;
+  /* max-height: 300px;
+  max-width: 450px; */
+  max-height: 90vh;
+  max-width: 70vw;
   border: 2px dashed #888888;
   padding: 7px;
   border-radius: 7px;
@@ -186,4 +231,23 @@ html, body {
   padding: 7px 12px;
   color: white;
   margin-right: 15px;
+}
+
+/* global stuff */
+.hidden {
+  display: none!important;
+}
+
+.disabled {
+  opacity: 0.2!important;
+  cursor: default!important;
+}
+
+.disabled * {
+  cursor: default!important;
+}
+
+.green {
+  color: green!important;
+  border-color: green!important;
 }

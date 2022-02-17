@@ -40,6 +40,7 @@ let dropbox = document.querySelectorAll('#upload-dialog-window .dialog-top')[0];
 const file_added = () => {
   upload_dialog_placeholder.classList.add('hidden');
   upload_dialog_window_image.classList.remove('hidden');
+  upload_dialog_placeholder.classList.remove('green');
 };
 const file_cleared = () => {
   upload_dialog.classList.add('hidden');
@@ -60,18 +61,19 @@ function handleFile(file) {
 function dragenter(e) {
   e.stopPropagation();
   e.preventDefault();
-  upload_dialog_placeholder.style.color = 'green';
-  upload_dialog_placeholder.style.borderColor = 'green';
+  // upload_dialog_placeholder.style.color = 'green';
+  // upload_dialog_placeholder.style.borderColor = 'green';
+  upload_dialog_placeholder.classList.add('green');
 }
 function dragover(e) {
   e.stopPropagation();
   e.preventDefault();
-  dropbox.style.color = 'green';
+  upload_dialog_placeholder.classList.add('green');
 }
 function dragleave(e) {
   e.stopPropagation();
   e.preventDefault();
-  dropbox.style.color = 'black';
+  upload_dialog_placeholder.classList.remove('green');
 }
 function drop(e) {
   e.stopPropagation();

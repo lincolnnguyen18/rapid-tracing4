@@ -9,6 +9,23 @@
   <body>
     <div id="upload-dialog" class="dialog hidden">
       <div id="upload-dialog-window" class="dialog-window">
+        <div class="dialog-header disabled">
+          <div id="upload-dialog-header-modes">
+            <span id="upload-dialog-header-modes-original-button" class="selected-mode">Original</span>
+            <span id="upload-dialog-header-modes-outline-button">Outline</span>
+            <span id="upload-dialog-header-modes-details-button">Details</span>
+          </div>
+          <div id="upload-dialog-header-sliders">
+            <div class="row-1">
+              <div>Kernel size: </div>
+              <input type="range" min="1" max="100" value="50">
+            </div>
+            <div class="row-2">
+              <div>Kernel sigma: </div>
+              <input type="range" min="1" max="100" value="50">
+            </div>
+          </div>
+        </div>
         <label class="dialog-top" for="upload-dialog-input">
           <div id="upload-dialog-placeholder">
             <span class="material-icons-round" id="upload-dialog-window-icon">image</span>
