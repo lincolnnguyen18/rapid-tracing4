@@ -7,27 +7,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <div id="container">
-      <div id="top">
-        <!-- <div id="top-message">New trace!</div> -->
-        <span id="left-time">5:17</span>
-        <progress id="progress" max="100" value="80"></progress>
-        <span id="right-time">7:12</span>
+    <div id="upload-dialog" class="dialog hidden">
+      <div id="upload-dialog-window" class="dialog-window">
+        <div class="dialog-top">
+          <span>Drag and drop a picture here</span>
+        </div>
+        <div class="dialog-bottom">
+          <span id="upload-dialog-cancel-button">Cancel</span>
+          <span id="upload-dialog-upload-button" class="disabled">Upload</span>
+        </div>
       </div>
-      <div id="modes">
-        <span id="original-mode">Original</span>
-        <span id="outline-mode">Outline</span>
-        <span id="details-mode">Details</span>
-      </div>
-      <div id="picture"></div>
-      <div id="bottom-left">
-        <span>Done</span>
-      </div>
-      <div id="bottom-right">
-        <span class="material-icons-round">logout</span>
-        <span class="material-icons-round">photo_library</span>
-        <span class="material-icons-round">file_upload</span>
-      </div>
+    </div>
+    <div id="top">
+      <!-- <div id="top-message">New trace!</div> -->
+      <span id="left-time">5:17</span>
+      <progress id="progress" max="100" value="80"></progress>
+      <span id="right-time">7:12</span>
+    </div>
+    <div id="modes">
+      <span id="original-mode">Original</span>
+      <span id="outline-mode">Outline</span>
+      <span id="details-mode" class="selected-mode">Details</span>
+    </div>
+    <div id="picture"></div>
+    <div id="bottom-left">
+      <span>Done</span>
+    </div>
+    <div id="bottom-right">
+      <span class="material-icons-round" id="logout-button">logout</span>
+      <span class="material-icons-round" id="delete-button">delete</span>
+      <span class="material-icons-round" id="pictures-button">photo_library</span>
+      <span class="material-icons-round" id="upload-button">file_upload</span>
     </div>
     <script src="/scripts/trace.js"></script>
   </body>
