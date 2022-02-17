@@ -30,7 +30,6 @@ $upload_dialog_cancel_button.addEventListener('click', () => {
 $upload_dialog_upload_button.addEventListener('click', () => {
   if (current_file) {
     upload_file(current_file);
-    close_upload_dialog();
   }
 });
 $upload_dialog.addEventListener('click', (e) => {
@@ -68,8 +67,6 @@ function handleFile(file) {
   if (current_file) {
     let old_width = $upload_dialog_window_image.offsetWidth;
     let old_height = $upload_dialog_window_image.offsetHeight;
-    console.log(`old_width: ${old_width}`);
-    console.log(`old_height: ${old_height}`);
     $upload_dialog_placeholder.style.width = `${old_width}px`;
     $upload_dialog_placeholder.style.height = `${old_height}px`;
     $upload_dialog_window_header.classList.add('disabled');
@@ -80,7 +77,6 @@ function handleFile(file) {
   let old_text = $upload_dialog_placeholder_text.innerHTML;
   $upload_dialog_placeholder_text.innerHTML = 'Uploading...';
   current_file = file;
-  console.log(file);
   $upload_dialog_window_image.file = file;
   const reader = new FileReader();
   reader.onload = (e) => {
