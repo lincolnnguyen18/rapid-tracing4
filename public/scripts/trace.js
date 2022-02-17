@@ -115,15 +115,8 @@ function handleFile(file) {
           $upload_dialog_placeholder_text.innerHTML = old_text;
           $upload_dialog_window_image.classList.remove('hidden');
           $upload_dialog_window_header.classList.remove('hidden');
+          $upload_dialog_placeholder.classList.remove('green');
         };
-        // $upload_dialog_window_image.onloadend = () => {
-        //   $upload_dialog_window_header.classList.remove('disabled');
-        //   $upload_dialog_upload_button.classList.remove('disabled');
-        //   $upload_dialog_placeholder.classList.add('hidden');
-        //   $upload_dialog_placeholder_text.innerHTML = old_text;
-        //   $upload_dialog_window_image.classList.remove('hidden');
-        // };
-        // file_added();
       });
     };
   };
