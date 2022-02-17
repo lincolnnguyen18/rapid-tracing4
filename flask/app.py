@@ -17,6 +17,18 @@ def genGaussianKernel(width, sigma):
   kernel_2d /= kernel_2d.sum()
   return kernel_2d
 
+def resize(image):
+  max_dim = 1600
+  (h, w) = image.shape[:2]
+  if h > w:
+    new_h = max_dim
+    new_w = (new_h * w) // h
+  else:
+    new_w = max_dim
+    new_h = (new_w * h) // w
+  new_dim = (new_w, new_h)
+  return cv2.resize(image, new_dim, interpolation = cv2.INTER_AREA)
+
 @app.route("/get-picture-preview", methods=["POST"])
 def get_picture_preview():
   body = request.get_json()
@@ -28,6 +40,8 @@ def get_picture_preview():
   size = request.args.get('size', type=int)
   sigma = request.args.get('sigma', type=int)
   image = cv2.imread('../shared/' + original_filename)
+  image = resize(image)
+  cv2.imwrite('../shared/' + original_filename, image)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)
   outline = cv2.subtract(blurred_image, image)

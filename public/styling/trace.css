@@ -14,6 +14,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0 20px;
 }
 
 #progress {
@@ -144,13 +145,14 @@ html, body {
 #upload-dialog-header-modes span {
   cursor: pointer;
   user-select: none;
+  padding: 7px;
 }
 
 #upload-dialog-header-modes .selected-mode {
   color: white;
-  background-color: black;
-  padding: 7px;
+  background-color: white;
   border-radius: 7px;
+  background-color: black;
   font-weight: bold;
 }
 
