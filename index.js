@@ -1,5 +1,12 @@
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('data.db');
+// var sqlite3 = require('sqlite3').verbose();
+// var db = new sqlite3.Database('data.db');
+const mysql = require('mysql2');
+const conn = mysql.createConnection({
+  host: 'localhost',
+  user: 'admin',
+  password: 'pass123',
+  database: 'rapid_tracing'
+});
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const file_upload = require('express-fileupload');
@@ -21,10 +28,16 @@ const isLoggedIn = (req, res, next) => {
   const token = req.cookies.token;
   if (token) {
     jwt.verify(token, 'Ln2121809', (err, decoded) => {
-      if (!err) {
-        db.get("select * from users where id = ?", decoded.id, function(err, row) {
-          if (!err && row) {
-            req.id = row.id;
+      if (!err && decoded.id) {
+        // db.get("select * from users where id = ?", decoded.id, function(err, row) {
+        //   if (!err && row) {
+        //     req.id = row.id;
+        //     next();
+        //   } else { res.redirect('/login'); }
+        // });
+        conn.execute("select * from users where id = ?", [decoded.id], function(err, rows) {
+          if (!err && rows && rows[0]) {
+            req.id = rows[0].id;
             next();
           } else { res.redirect('/login'); }
         });
@@ -38,9 +51,15 @@ const isNotLoggedIn = (req, res, next) => {
   if (token) {
     jwt.verify(token, 'Ln2121809', (err, decoded) => {
       if (!err) {
-        db.get("select * from users where id = ?", decoded.id, function(err, row) {
-          if (!err && row) {
-            req.id = row.id;
+        // db.get("select * from users where id = ?", decoded.id, function(err, row) {
+        //   if (!err && row) {
+        //     req.id = row.id;
+        //     res.redirect('/');
+        //   } else { next(); }
+        // });
+        conn.execute("select * from users where id = ?", [decoded.id], function(err, rows) {
+          if (!err && rows && rows[0]) {
+            req.id = rows[0].id;
             res.redirect('/');
           } else { next(); }
         });
@@ -53,8 +72,10 @@ const router = express.Router();
 
 router.post('/login', function (req, res) {
   let { username, password } = req.body
-  db.get("select * from users where username = ?", username, function(err, row) {
-    if (!err && row) {
+  // db.get("select * from users where username = ?", username, function(err, row) {
+  conn.execute("select * from users where username = ?", [username], function(err, rows) {
+    if (!err && rows) {
+      let row = rows[0];
       bcrypt.compare(password, row.password, function(err, result) {
         if (!err && result) {
           let token = jwt.sign({ id: row.id }, 'Ln2121809');
@@ -75,10 +96,13 @@ router.post('/register', function (req, res) {
   let { username, password } = req.body
   if(!username.trim() || !password.trim()) {
     res.send({ error: 'Username and password are required.' })
+  } else if (username.length > 255) {
+    res.send({ error: 'Username is too long.' })
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-    db.run("insert into users (username, password) values (?, ?)", username, hash, function(err) {
+    // db.run("insert into users (username, password) values (?, ?)", username, hash, function(err) {
+    conn.execute("insert into users (username, password) values (?, ?)", [username, hash], function(err) {
       if (err) {
         res.send({ error: 'Username already exists' });
       } else {
@@ -94,6 +118,12 @@ router.post('/register', function (req, res) {
   }
 });
 
+// CREATE TABLE IF NOT EXISTS pictures (
+//   id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   filename TEXT NOT NULL,
+//   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+// );
+
 router.get('/logout', function (req, res) {
   res.clearCookie('token');
   res.redirect('/login');
@@ -107,7 +137,14 @@ router.post('/add-picture', isLoggedIn, function (req, res) {
     if (err) {
       res.send({ error: 'Could not add picture to library.' });
     } else {
-      res.send({ message: 'OK' });
+      // db.run("insert into pictures (filename) values (?)", filename, function(err) {
+      conn.execute("insert into pictures (filename) values (?)", [filename], function(err) {
+        if (err) {
+          res.send({ error: 'Could not add picture to library.' });
+        } else {
+          res.send({ message: 'OK' });
+        }
+      });
     }
   });
 });
