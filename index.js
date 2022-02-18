@@ -80,10 +80,11 @@ router.post('/register', function (req, res) {
     const hash = bcrypt.hashSync(password, salt);
     db.run("insert into users (username, password) values (?, ?)", username, hash, function(err) {
       if (err) {
-        res.status(500).send({ error: 'Username already exists' });
+        res.send({ error: 'Username already exists' });
       } else {
         fs.mkdirSync(`./shared/${this.lastID}`);
         fs.mkdirSync(`./shared/${this.lastID}/temp`);
+        fs.mkdirSync(`./shared/${this.lastID}/library`);
         let token = jwt.sign({ id: this.lastID }, 'Ln2121809');
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
         res.cookie('id', this.lastID, { sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
@@ -97,6 +98,20 @@ router.get('/logout', function (req, res) {
   res.clearCookie('token');
   res.redirect('/login');
 });
+/* add picture to library stuff */
+router.post('/add-picture', isLoggedIn, function (req, res) {
+  let { filename, extension } = req.body
+  let old_dir_path = `./shared/${req.id}/temp/${filename}`
+  let new_dir_path = `./shared/${req.id}/library/${filename}`
+  fs.rename(old_dir_path, new_dir_path, function(err) {
+    if (err) {
+      res.send({ error: 'Could not add picture to library.' });
+    } else {
+      res.send({ message: 'OK' });
+    }
+  });
+});
+
 /* file upload stuff */
 router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   const size = req.query.size;
@@ -104,7 +119,10 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
-    const temp_name = Math.random().toString(36).substring(7)
+    let temp_name = Math.random().toString(36).substring(7)
+    while (fs.existsSync(`./shared/${req.id}/temp/${temp_name}` || fs.existsSync(`./shared/${req.id}/library/${temp_name}`))) {
+      temp_name = Math.random().toString(36).substring(7)
+    }
     const extension = file.name.substring(file.name.lastIndexOf('.')+1).toLowerCase();
     if (!fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
       fs.mkdirSync(`./shared/${req.id}/temp/${temp_name}`);
@@ -132,15 +150,21 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
             temp_files_seconds_since_last_access[req.id] = {};
           }
           temp_files_seconds_since_last_access[req.id][temp_name] = 0;
-          // let interval = setInterval(() => {
-          //   if (temp_files_seconds_since_last_access[req.id][temp_name] >= 3) {
-          //     fs.rm(`${__dirname}/shared/${req.id}/temp/${temp_name}`, { recursive: true, force: true });
-          //     clearInterval(interval);
-          //   } else {
-          //     temp_files_seconds_since_last_access[req.id][temp_name]++;
-          //     console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
-          //   }
-          // }, 1000);
+          let interval = setInterval(() => {
+            if (temp_files_seconds_since_last_access[req.id][temp_name] >= 60) {
+              if (fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
+                fs.rm(`${__dirname}/shared/${req.id}/temp/${temp_name}`, { recursive: true, force: true }, function(err) {
+                  if (err) {
+                    console.log(err);
+                  }
+                });
+              }
+              clearInterval(interval);
+            } else {
+              temp_files_seconds_since_last_access[req.id][temp_name]++;
+              console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+            }
+          }, 1000);
           res.send({ filename: temp_name, extension: extension });
         });
       }
@@ -162,6 +186,19 @@ app.get("/shared/:id/temp/:filename/:type", isLoggedIn, (req, res) => {
   if (req.params.id == req.id) {
     temp_files_seconds_since_last_access[req.id][req.params.filename] = 0;
     let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}/${req.params.type}`;
+    if (fs.existsSync(path)) {
+      res.sendFile(path);
+    } else {
+      res.sendFile(__dirname + '/pages/404.html');
+    }
+  } else {
+    res.sendFile(__dirname + '/pages/404.html');
+  }
+});
+app.get("/shared/:id/library/:filename/:type", isLoggedIn, (req, res) => {
+  console.log(`User with id ${req.id} is trying to access file named '${req.params.filename}' directory with id ${req.params.id}`);
+  if (req.params.id == req.id) {
+    let path = __dirname + `/shared/${req.params.id}/library/${req.params.filename}/${req.params.type}`;
     if (fs.existsSync(path)) {
       res.sendFile(path);
     } else {

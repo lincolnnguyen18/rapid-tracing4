@@ -235,17 +235,11 @@ html, body {
   gap: 30px;
 }
 
-#upload-dialog-window .dialog-bottom .left {
+/* #upload-dialog-window .dialog-bottom .left {
   display: flex;
   align-items: center;
   gap: 10px;
-}
-
-#upload-dialog-paste-icon {
-  font-size: 24px;
-  user-select: none;
-  cursor: pointer;
-}
+} */
 
 #upload-dialog-upload-button {
   background-color: black;

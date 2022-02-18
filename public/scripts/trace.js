@@ -35,7 +35,20 @@ $upload_dialog_cancel_button.addEventListener('click', () => {
   close_upload_dialog();
 });
 $upload_dialog_upload_button.addEventListener('click', () => {
-  close_upload_dialog();
+  if (preview_json) {
+    fetch('/api/add-picture', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(preview_json)
+    })
+    .then(res => res.json())
+    .then(json => {
+      console.log(json);
+      // close_upload_dialog();
+    });
+  }
 });
 // $upload_dialog.addEventListener('click', (e) => {
 //   close_upload_dialog();
@@ -74,7 +87,7 @@ const get_preview = async (file, size, sigma) => {
   .then(res => res.json())
   .then(json => {
     preview_json = json;
-    console.log(`preview_json: ${JSON.stringify(preview_json)}`);
+    // console.log(`preview_json: ${JSON.stringify(preview_json)}`);
     // $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
     switch (selected_button) {
       case $upload_dialog_header_modes_original_button:
