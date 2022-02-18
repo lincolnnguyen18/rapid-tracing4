@@ -258,11 +258,8 @@ const close_library_dialog = () => {
   $container.classList.remove('blurred');
 }
 
-{/* <div class="images hidden">
-  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-1">
-  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-2">
-  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-3">
-</div> */}
+let last_library_selection = null;
+let last_library_selection_id = null;
 
 const get_library = () => {
   fetch(`/api/get-pictures`)
@@ -276,8 +273,23 @@ const get_library = () => {
         $img.src = `/shared/${user_id}/library/${filename}/thumbnail.${extension}`;
         $img.classList.add('num-' + id);
         $img.addEventListener('click', () => {
-          console.log(id);
-          $img.classList.toggle('half-opacity');
+          if (last_library_selection) {
+            if (last_library_selection != $img) {
+              last_library_selection.classList.remove('half-opacity');
+              $img.classList.add('half-opacity');
+              last_library_selection = $img;
+              last_library_selection_id = id;
+            } else {
+              $img.classList.remove('half-opacity');
+              last_library_selection = null;
+              last_library_selection_id = null;
+            }
+          } else {
+            $img.classList.add('half-opacity');
+            last_library_selection = $img;
+            last_library_selection_id = id;
+          }
+          console.log(last_library_selection_id);
         });
         $library_dialog_window_images.appendChild($img);
       });
