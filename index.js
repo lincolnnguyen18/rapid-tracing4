@@ -114,15 +114,17 @@ router.get('/logout', function (req, res) {
 //   INSERT INTO user_pictures (user_id, picture_id) VALUES (_user_id, LAST_INSERT_ID());
 // END//
 router.post('/add-picture', isLoggedIn, function (req, res) {
-  let { filename, extension } = req.body
-  let old_dir_path = `./shared/${req.id}/temp/${filename}`
-  let new_dir_path = `./shared/${req.id}/library/${filename}`
+  let { filename, extension } = req.body;
+  console.log(filename, extension);
+  let old_dir_path = `./shared/${req.id}/temp/${filename}`;
+  let new_dir_path = `./shared/${req.id}/library/${filename}`;
   fs.rename(old_dir_path, new_dir_path, function(err) {
     if (err) {
       res.send({ error: 'Could not add picture to library.' });
     } else {
-      conn.execute("CALL add_picture(?, ?)", [filename, req.id], function(err, result) {
+      conn.execute("CALL add_picture(?, ?, ?)", [filename, extension, req.id], function(err, result) {
         if (err) {
+          console.log(err);
           res.send({ error: 'Could not add picture to library.' });
         } else {
           res.send({ message: 'OK' });
@@ -228,7 +230,7 @@ app.get("/shared/:id/library/:filename/:type", isLoggedIn, (req, res) => {
     res.sendFile(__dirname + '/pages/404.html');
   }
 });
-app.get('*', (req, res) => {
+app.get('*', isLoggedIn, (req, res) => {
   console.log(`Invalid request: ${req.url}`);
   res.sendFile(__dirname + '/pages/404.html');
 });

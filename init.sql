@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS pictures (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   filename TEXT NOT NULL,
+  extension TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -41,8 +42,11 @@ CREATE PROCEDURE register_user(_username VARCHAR(255), _password TEXT, OUT user_
   INSERT INTO users (username, password) VALUES (_username, _password);
   SET user_id = LAST_INSERT_ID();
 END //
-CREATE PROCEDURE add_picture(_filename TEXT, _user_id INTEGER) BEGIN
-  INSERT INTO pictures (filename) VALUES (_filename);
+CREATE PROCEDURE add_picture(_filename TEXT, _extension TEXT, _user_id INTEGER) BEGIN
+  INSERT INTO pictures (filename, extension) VALUES (_filename, _extension);
   INSERT INTO user_pictures (user_id, picture_id) VALUES (_user_id, LAST_INSERT_ID());
+END//
+CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
+  SELECT filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id;
 END//
 DELIMITER ;
