@@ -104,8 +104,12 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
-    const temp_name = Math.random().toString(36).substring(7) + file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-    file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}`, function(err) {
+    const temp_name = Math.random().toString(36).substring(7)
+    const extension = file.name.substring(file.name.lastIndexOf('.')+1).toLowerCase();
+    if (!fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
+      fs.mkdirSync(`./shared/${req.id}/temp/${temp_name}`);
+    }
+    file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}/original.${extension}`, function(err) {
       if (err) {
         console.log(err);
         res.send({ error: 'Error uploading file.' });
@@ -117,29 +121,27 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
           },
           body: JSON.stringify({
             filename: temp_name,
+            extension: extension,
             user_id: req.id
           })
         })
         .then(res => res.json())
         .then(json => {
           console.log(json);
-          let filenames = [json.original, json.outline, json.details];
           if (!temp_files_seconds_since_last_access[req.id]) {
             temp_files_seconds_since_last_access[req.id] = {};
           }
-          filenames.forEach(filename => {
-            temp_files_seconds_since_last_access[req.id][filename] = 0;
-            let interval = setInterval(() => {
-              if (temp_files_seconds_since_last_access[req.id][filename] >= 60) {
-                fs.unlinkSync(`${__dirname}/shared/${req.id}/temp/${filename}`);
-                clearInterval(interval);
-              } else {
-                temp_files_seconds_since_last_access[req.id][filename]++;
-                // console.log(`${req.id}, ${filename}: ${temp_files_seconds_since_last_access[req.id][filename]}`);
-              }
-            }, 1000);
-          });
-          res.send(json);
+          temp_files_seconds_since_last_access[req.id][temp_name] = 0;
+          // let interval = setInterval(() => {
+          //   if (temp_files_seconds_since_last_access[req.id][temp_name] >= 3) {
+          //     fs.rm(`${__dirname}/shared/${req.id}/temp/${temp_name}`, { recursive: true, force: true });
+          //     clearInterval(interval);
+          //   } else {
+          //     temp_files_seconds_since_last_access[req.id][temp_name]++;
+          //     console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+          //   }
+          // }, 1000);
+          res.send({ filename: temp_name, extension: extension });
         });
       }
     });
@@ -155,11 +157,11 @@ app.get('/', isLoggedIn, (req, res) => {
 app.get('/login', isNotLoggedIn, (req, res) => {
   res.sendFile(__dirname + '/pages/login.html');
 });
-app.get("/shared/:id/temp/:filename", isLoggedIn, (req, res) => {
+app.get("/shared/:id/temp/:filename/:type", isLoggedIn, (req, res) => {
   console.log(`User with id ${req.id} is trying to access file named '${req.params.filename}' directory with id ${req.params.id}`);
   if (req.params.id == req.id) {
     temp_files_seconds_since_last_access[req.id][req.params.filename] = 0;
-    let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}`;
+    let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}/${req.params.type}`;
     if (fs.existsSync(path)) {
       res.sendFile(path);
     } else {

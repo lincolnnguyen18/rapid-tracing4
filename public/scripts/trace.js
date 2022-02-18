@@ -74,16 +74,17 @@ const get_preview = async (file, size, sigma) => {
   .then(res => res.json())
   .then(json => {
     preview_json = json;
+    console.log(`preview_json: ${JSON.stringify(preview_json)}`);
     // $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
     switch (selected_button) {
       case $upload_dialog_header_modes_original_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.original}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/original.${preview_json.extension}`;
         break;
       case $upload_dialog_header_modes_outline_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/outline.${preview_json.extension}`;
         break;
       case $upload_dialog_header_modes_details_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.details}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
         break;
     }
   });
@@ -212,28 +213,28 @@ $upload_dialog_header_modes_original_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_original_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.original}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/original.${preview_json.extension}`;
 });
 $upload_dialog_header_modes_outline_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_outline_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/outline.${preview_json.extension}`;
 });
 $upload_dialog_header_modes_details_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_details_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.details}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
 });
 
 // keydown events
-// document.addEventListener('keydown', (e) => {
-//   if (e.key == 'Escape') {
-//     if (upload_dialog_open)
-//       close_upload_dialog();
-//   }
-// });
+document.addEventListener('keydown', (e) => {
+  if (e.key == 'Escape') {
+    if (upload_dialog_open)
+      close_upload_dialog();
+  }
+});
 window.addEventListener('paste', e => {
   const files = e.clipboardData.files;
   if (files.length > 0) {
