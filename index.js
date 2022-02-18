@@ -1,11 +1,10 @@
-// var sqlite3 = require('sqlite3').verbose();
-// var db = new sqlite3.Database('data.db');
 const mysql = require('mysql2');
 const conn = mysql.createConnection({
   host: 'localhost',
   user: 'admin',
   password: 'pass123',
-  database: 'rapid_tracing'
+  database: 'rapid_tracing',
+  multipleStatements: true
 });
 const express = require('express');
 const cookieParser = require('cookie-parser');
@@ -14,7 +13,6 @@ const fetch = require('node-fetch');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
-const mongo = require('mongodb');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -29,14 +27,8 @@ const isLoggedIn = (req, res, next) => {
   if (token) {
     jwt.verify(token, 'Ln2121809', (err, decoded) => {
       if (!err && decoded.id) {
-        // db.get("select * from users where id = ?", decoded.id, function(err, row) {
-        //   if (!err && row) {
-        //     req.id = row.id;
-        //     next();
-        //   } else { res.redirect('/login'); }
-        // });
         conn.execute("select * from users where id = ?", [decoded.id], function(err, rows) {
-          if (!err && rows && rows[0]) {
+          if (!err && rows && rows.length > 0 && rows[0]) {
             req.id = rows[0].id;
             next();
           } else { res.redirect('/login'); }
@@ -50,15 +42,9 @@ const isNotLoggedIn = (req, res, next) => {
   const token = req.cookies.token;
   if (token) {
     jwt.verify(token, 'Ln2121809', (err, decoded) => {
-      if (!err) {
-        // db.get("select * from users where id = ?", decoded.id, function(err, row) {
-        //   if (!err && row) {
-        //     req.id = row.id;
-        //     res.redirect('/');
-        //   } else { next(); }
-        // });
+      if (!err && decoded.id) {
         conn.execute("select * from users where id = ?", [decoded.id], function(err, rows) {
-          if (!err && rows && rows[0]) {
+          if (!err && rows && rows.length > 0 &&rows[0]) {
             req.id = rows[0].id;
             res.redirect('/');
           } else { next(); }
@@ -72,9 +58,8 @@ const router = express.Router();
 
 router.post('/login', function (req, res) {
   let { username, password } = req.body
-  // db.get("select * from users where username = ?", username, function(err, row) {
   conn.execute("select * from users where username = ?", [username], function(err, rows) {
-    if (!err && rows) {
+    if (!err && rows && rows.length > 0) {
       let row = rows[0];
       bcrypt.compare(password, row.password, function(err, result) {
         if (!err && result) {
@@ -101,34 +86,33 @@ router.post('/register', function (req, res) {
   } else {
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-    // db.run("insert into users (username, password) values (?, ?)", username, hash, function(err) {
-    conn.execute("insert into users (username, password) values (?, ?)", [username, hash], function(err) {
+    conn.query("CALL register_user(?, ?, @user_id); select @user_id", [username, hash], function(err, result) {
       if (err) {
         res.send({ error: 'Username already exists' });
+      } else if (!result || !result[1] || !result[1][0] || !result[1][0]['@user_id']) {
+        res.send({ error: 'Error registering user.' });
       } else {
-        fs.mkdirSync(`./shared/${this.lastID}`);
-        fs.mkdirSync(`./shared/${this.lastID}/temp`);
-        fs.mkdirSync(`./shared/${this.lastID}/library`);
-        let token = jwt.sign({ id: this.lastID }, 'Ln2121809');
+        let user_id = result[1][0]['@user_id'];
+        fs.mkdirSync(`./shared/${user_id}`);
+        fs.mkdirSync(`./shared/${user_id}/temp`);
+        fs.mkdirSync(`./shared/${user_id}/library`);
+        let token = jwt.sign({ id: user_id }, 'Ln2121809');
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
-        res.cookie('id', this.lastID, { sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
+        res.cookie('id', user_id, { sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
         res.send({ message: 'OK' })
       }
     });
   }
 });
-
-// CREATE TABLE IF NOT EXISTS pictures (
-//   id INTEGER PRIMARY KEY AUTOINCREMENT,
-//   filename TEXT NOT NULL,
-//   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-// );
-
 router.get('/logout', function (req, res) {
   res.clearCookie('token');
   res.redirect('/login');
 });
 /* add picture to library stuff */
+// CREATE PROCEDURE add_picture(_filename TEXT, _user_id INTEGER) BEGIN
+//   INSERT INTO pictures (filename) VALUES (_filename);
+//   INSERT INTO user_pictures (user_id, picture_id) VALUES (_user_id, LAST_INSERT_ID());
+// END//
 router.post('/add-picture', isLoggedIn, function (req, res) {
   let { filename, extension } = req.body
   let old_dir_path = `./shared/${req.id}/temp/${filename}`
@@ -137,8 +121,7 @@ router.post('/add-picture', isLoggedIn, function (req, res) {
     if (err) {
       res.send({ error: 'Could not add picture to library.' });
     } else {
-      // db.run("insert into pictures (filename) values (?)", filename, function(err) {
-      conn.execute("insert into pictures (filename) values (?)", [filename], function(err) {
+      conn.execute("CALL add_picture(?, ?)", [filename, req.id], function(err, result) {
         if (err) {
           res.send({ error: 'Could not add picture to library.' });
         } else {

@@ -46,7 +46,7 @@ $upload_dialog_upload_button.addEventListener('click', () => {
     .then(res => res.json())
     .then(json => {
       console.log(json);
-      // close_upload_dialog();
+      close_upload_dialog();
     });
   }
 });

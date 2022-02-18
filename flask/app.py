@@ -17,8 +17,7 @@ def genGaussianKernel(width, sigma):
   kernel_2d /= kernel_2d.sum()
   return kernel_2d
 
-def resize(image):
-  max_dim = 2000
+def resize(image, max_dim):
   (h, w) = image.shape[:2]
   if h > w:
     new_h = max_dim
@@ -41,7 +40,8 @@ def get_picture_preview():
   size = request.args.get('size', type=int)
   sigma = request.args.get('sigma', type=int)
   image = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}")
-  image = resize(image)
+  image = resize(image, 2000)
+  thumbnail = resize(image, 400)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/original.{extension}", image)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)
@@ -49,4 +49,5 @@ def get_picture_preview():
   details = cv2.subtract(image, blurred_image)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/outline.{extension}", outline)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/details.{extension}", details)
+  cv2.imwrite(f"../shared/{user_id}/temp/{filename}/thumbnail.{extension}", thumbnail)
   return jsonify({"message": "success"})

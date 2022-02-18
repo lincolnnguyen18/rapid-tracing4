@@ -37,8 +37,9 @@ CREATE TABLE IF NOT EXISTS picture_timerecords (
 );
 
 DELIMITER //
-CREATE PROCEDURE register_user(_username VARCHAR(255), _password TEXT) BEGIN
+CREATE PROCEDURE register_user(_username VARCHAR(255), _password TEXT, OUT user_id INT) BEGIN
   INSERT INTO users (username, password) VALUES (_username, _password);
+  SET user_id = LAST_INSERT_ID();
 END //
 CREATE PROCEDURE add_picture(_filename TEXT, _user_id INTEGER) BEGIN
   INSERT INTO pictures (filename) VALUES (_filename);
