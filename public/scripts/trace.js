@@ -313,6 +313,45 @@ $library_dialog_window_close_button.addEventListener('click', () => {
   close_library_dialog();
 });
 
+// start stop controls
+const $controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
+const $controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];
+let controls_started = false;
+let shuffled = null;
+let iteration = 0;
+
+$controls_start_button.onclick = () => {
+  controls_started = !controls_started;
+  if (controls_started) {
+    $controls_done_button.classList.remove('disabled');
+    $controls_start_button.innerHTML = 'Stop';
+    fetch(`/api/get-pictures`)
+    .then(res => res.json())
+    .then(json => {
+      if (json.length > 0) {
+        shuffled = _.shuffle(json);
+        // console.log(shuffled);
+        // shuffled.forEach(picture => {
+        //   const { id, filename, extension } = picture;
+        //   console.log(id, filename, extension);
+        // });
+      }
+    });
+  } else {
+    $controls_start_button.innerHTML = 'Start';
+    $controls_done_button.classList.add('disabled');
+  }
+}
+
+$controls_done_button.addEventListener('click', () => {
+  const { id, filename, extension } = shuffled[iteration];
+  console.log(id, filename, extension, iteration);
+  iteration += 1;
+  if (iteration >= shuffled.length) {
+    iteration = 0;
+  }
+});
+
 // keydown events
 document.addEventListener('keydown', (e) => {
   if (e.key == 'Escape') {

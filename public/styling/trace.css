@@ -301,6 +301,12 @@ html, body {
   color: white;
 }
 
+/* controls */
+#bottom-left > span.start-button {
+  width: 37px;
+  text-align: center;
+}
+
 /* global stuff */
 .hidden {
   display: none!important;
