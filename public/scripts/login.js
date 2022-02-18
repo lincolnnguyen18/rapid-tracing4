@@ -5,6 +5,8 @@ const $register_link = document.querySelectorAll('#register-link')[0];
 const $back_link = document.querySelectorAll('#back-link')[0];
 const $login_form = document.querySelectorAll('#login-form')[0];
 const $register_form = document.querySelectorAll('#register-form')[0];
+const $login_username_input = document.querySelectorAll('#login-username-input')[0];
+const $register_username_input = document.querySelectorAll('#register-username-input')[0];
 
 let mode = 'login';
 let submitted = false;
@@ -13,12 +15,14 @@ $register_link.addEventListener('click', () => {
   $login_form.classList.toggle('hidden');
   $register_form.classList.toggle('hidden');
   mode = 'register';
+  $register_username_input.focus();
 });
 
 $back_link.addEventListener('click', () => {
   $login_form.classList.toggle('hidden');
   $register_form.classList.toggle('hidden');
   mode = 'login';
+  $login_username_input.focus();
 });
 
 const $login_button = document.querySelectorAll('#login-button')[0];

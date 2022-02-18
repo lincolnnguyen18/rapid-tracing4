@@ -14,7 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(file_upload());
 app.use(express.static('public'));
-// app.use("/shared", express.static("shared"));
+
+let temp_files_seconds_since_last_access = {};
 
 const isLoggedIn = (req, res, next) => {
   const token = req.cookies.token;
@@ -81,7 +82,8 @@ router.post('/register', function (req, res) {
       if (err) {
         res.status(500).send({ error: 'Username already exists' });
       } else {
-        fs.mkdirSync(`./shared/user_${this.lastID}`);
+        fs.mkdirSync(`./shared/${this.lastID}`);
+        fs.mkdirSync(`./shared/${this.lastID}/temp`);
         let token = jwt.sign({ id: this.lastID }, 'Ln2121809');
         res.cookie('token', token, { httpOnly: true, sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
         res.cookie('id', this.lastID, { sameSite: 'strict', expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365) });
@@ -103,7 +105,7 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   if (req.files && req.files.picture) {
     let file = req.files.picture;
     const temp_name = Math.random().toString(36).substring(7) + file.name.substring(file.name.lastIndexOf('.'));
-    file.mv(`${__dirname}/shared/user_${req.id}/${temp_name}`, function(err) {
+    file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}`, function(err) {
       if (err) {
         console.log(err);
         res.send({ error: 'Error uploading file.' });
@@ -121,6 +123,22 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
         .then(res => res.json())
         .then(json => {
           console.log(json);
+          let filenames = [json.original, json.outline, json.details];
+          if (!temp_files_seconds_since_last_access[req.id]) {
+            temp_files_seconds_since_last_access[req.id] = {};
+          }
+          filenames.forEach(filename => {
+            temp_files_seconds_since_last_access[req.id][filename] = 0;
+            let interval = setInterval(() => {
+              if (temp_files_seconds_since_last_access[req.id][filename] >= 100) {
+                fs.unlinkSync(`${__dirname}/shared/${req.id}/temp/${filename}`);
+                clearInterval(interval);
+              } else {
+                temp_files_seconds_since_last_access[req.id][filename]++;
+                // console.log(temp_files_seconds_since_last_access[req.id][filename]);
+              }
+            }, 1000);
+          });
           // setTimeout(() => {
           //   let filenames = [json.original, json.outline, json.details];
           //   filenames.forEach(filename => {
@@ -147,10 +165,10 @@ app.get('/', isLoggedIn, (req, res) => {
 app.get('/login', isNotLoggedIn, (req, res) => {
   res.sendFile(__dirname + '/pages/login.html');
 });
-app.get("/shared/:id/:filename", isLoggedIn, (req, res) => {
+app.get("/shared/:id/temp/:filename", isLoggedIn, (req, res) => {
   console.log(`User with id ${req.id} is trying to access file named '${req.params.filename}' directory with id ${req.params.id}`);
   if (req.params.id == req.id) {
-    let path = __dirname + `/shared/user_${req.params.id}/${req.params.filename}`;
+    let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}`;
     if (fs.existsSync(path)) {
       res.sendFile(path);
     } else {
@@ -161,7 +179,7 @@ app.get("/shared/:id/:filename", isLoggedIn, (req, res) => {
   }
 });
 app.get('*', (req, res) => {
-  console.log('404');
+  console.log(`Invalid request: ${req.url}`);
   res.sendFile(__dirname + '/pages/404.html');
 });
 

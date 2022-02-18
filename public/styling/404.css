@@ -12,6 +12,7 @@ html, body {
 
 #icon {
   font-size: 140px;
+  user-select: none;
 }
 
 #title {
