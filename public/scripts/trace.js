@@ -50,9 +50,6 @@ $upload_dialog_upload_button.addEventListener('click', () => {
     });
   }
 });
-$upload_dialog_window.addEventListener('click', (e) => {
-  e.stopPropagation();
-});
 
 // upload dialog dropbox
 const $upload_dialog_window_image = document.querySelectorAll('#upload-dialog-window-image')[0];
@@ -240,6 +237,7 @@ $upload_dialog_header_modes_details_button.addEventListener('click', () => {
 
 // library dialog
 const $library_dialog = document.querySelectorAll('#library-dialog')[0];
+const $library_dialog_window = document.querySelectorAll('#library-dialog-window')[0];
 const $pictures_button = document.querySelectorAll('#pictures-button')[0];
 const $library_dialog_window_close_button = document.querySelectorAll('#library-dialog-window > div.buttons > span.close-button')[0];
 const $library_dialog_window_placeholder = document.querySelectorAll('#library-dialog-window > div.placeholder')[0];
@@ -247,6 +245,10 @@ const $library_dialog_window_images = document.querySelectorAll('#library-dialog
 
 $library_dialog.addEventListener('click', (e) => {
   close_library_dialog();
+});
+
+$library_dialog_window.addEventListener('click', (e) => {
+  e.stopPropagation();
 });
 
 const open_library_dialog = () => {
