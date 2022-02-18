@@ -109,10 +109,6 @@ router.get('/logout', function (req, res) {
   res.redirect('/login');
 });
 /* add picture to library stuff */
-// CREATE PROCEDURE add_picture(_filename TEXT, _user_id INTEGER) BEGIN
-//   INSERT INTO pictures (filename) VALUES (_filename);
-//   INSERT INTO user_pictures (user_id, picture_id) VALUES (_user_id, LAST_INSERT_ID());
-// END//
 router.post('/add-picture', isLoggedIn, function (req, res) {
   let { filename, extension } = req.body;
   console.log(filename, extension);
@@ -130,6 +126,19 @@ router.post('/add-picture', isLoggedIn, function (req, res) {
           res.send({ message: 'OK' });
         }
       });
+    }
+  });
+});
+// CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
+//   SELECT filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id;
+// END//
+/* get user pictures stuff */
+router.get('/get-pictures', isLoggedIn, function (req, res) {
+  conn.execute("CALL get_user_pictures(?)", [req.id], function(err, result) {
+    if (err) {
+      res.send({ error: 'Could not get user pictures.' });
+    } else {
+      res.send(result[0]);
     }
   });
 });

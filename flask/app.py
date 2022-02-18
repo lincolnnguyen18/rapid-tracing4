@@ -41,7 +41,7 @@ def get_picture_preview():
   sigma = request.args.get('sigma', type=int)
   image = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}")
   image = resize(image, 2000)
-  thumbnail = resize(image, 400)
+  thumbnail = resize(image, 1000)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/original.{extension}", image)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)

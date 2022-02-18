@@ -123,6 +123,57 @@ html, body {
   gap: 15px;
 }
 
+#library-dialog .dialog-window {
+  max-height: 90vh;
+  max-width: 90vw;
+  padding-top: 0;
+  padding-left: 0;
+  padding-right: 0;
+  width: 430px;
+  min-height: 400px;
+}
+
+#library-dialog .images {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: auto;
+  padding: 15px;
+}
+
+#library-dialog .images img {
+  max-width: 400px;
+  /* max-height: 400px; */
+  cursor: pointer;
+  user-select: none;
+}
+
+#library-dialog-window > div.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  height: 400px;
+  margin: 0 auto;
+}
+
+#library-dialog .buttons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+#library-dialog .buttons > span {
+  cursor: pointer;
+  user-select: none;
+}
+
+#library-dialog .delete-button {
+  font-size: 24px;
+}
+
 #upload-dialog-window .dialog-top {
   display: flex;
   flex-direction: column;
@@ -277,4 +328,8 @@ html, body {
 
 div#container.blurred * {
   filter: blur(4px);
+}
+
+.half-opacity {
+  opacity: 0.5!important;
 }

@@ -241,6 +241,63 @@ $upload_dialog_header_modes_details_button.addEventListener('click', () => {
   $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
 });
 
+// library dialog
+const $library_dialog = document.querySelectorAll('#library-dialog')[0];
+const $pictures_button = document.querySelectorAll('#pictures-button')[0];
+const $library_dialog_window_close_button = document.querySelectorAll('#library-dialog-window > div.buttons > span.close-button')[0];
+const $library_dialog_window_placeholder = document.querySelectorAll('#library-dialog-window > div.placeholder')[0];
+const $library_dialog_window_images = document.querySelectorAll('#library-dialog-window > div.images')[0];
+
+const open_library_dialog = () => {
+  $library_dialog.classList.remove('hidden');
+  $container.classList.add('blurred');
+}
+
+const close_library_dialog = () => {
+  $library_dialog.classList.add('hidden');
+  $container.classList.remove('blurred');
+}
+
+{/* <div class="images hidden">
+  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-1">
+  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-2">
+  <img src="/shared/1/library/sc952m/thumbnail.jpg" class="num-3">
+</div> */}
+
+const get_library = () => {
+  fetch(`/api/get-pictures`)
+  .then(res => res.json())
+  .then(json => {
+    if (json.length > 0) {
+      $library_dialog_window_images.innerHTML = '';
+      json.forEach(picture => {
+        const { id, filename, extension } = picture;
+        const $img = document.createElement('img');
+        $img.src = `/shared/${user_id}/library/${filename}/thumbnail.${extension}`;
+        $img.classList.add('num-' + id);
+        $img.addEventListener('click', () => {
+          console.log(id);
+          $img.classList.toggle('half-opacity');
+        });
+        $library_dialog_window_images.appendChild($img);
+      });
+      $library_dialog_window_images.classList.remove('hidden');
+      $library_dialog_window_placeholder.classList.add('hidden');
+    } else {
+      $library_dialog_window_placeholder.classList.remove('hidden');
+    }
+  });
+}
+
+$pictures_button.addEventListener('click', () => {
+  open_library_dialog();
+  get_library();
+});
+
+$library_dialog_window_close_button.addEventListener('click', () => {
+  close_library_dialog();
+});
+
 // keydown events
 document.addEventListener('keydown', (e) => {
   if (e.key == 'Escape') {

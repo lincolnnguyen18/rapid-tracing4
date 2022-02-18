@@ -47,6 +47,6 @@ CREATE PROCEDURE add_picture(_filename TEXT, _extension TEXT, _user_id INTEGER) 
   INSERT INTO user_pictures (user_id, picture_id) VALUES (_user_id, LAST_INSERT_ID());
 END//
 CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
-  SELECT filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id;
+  SELECT pictures.id, filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id ORDER BY pictures.id DESC;
 END//
 DELIMITER ;
