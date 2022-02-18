@@ -89,7 +89,9 @@ const get_preview = async (file, size, sigma) => {
 const $kernel_size_slider = document.querySelectorAll('#kernel-size-slider')[0];
 const $kernel_sigma_slider = document.querySelectorAll('#kernel-sigma-slider')[0];
 let seconds_since_size_change = 0;
+let seconds_since_sigma_change = 0;
 let last_size_interval = null;
+let last_sigma_interval = null;
 $kernel_size_slider.addEventListener('input', (e) => {
   seconds_since_size_change = 0;
   $upload_dialog_window_image.classList.add('getting-preview');
@@ -107,8 +109,20 @@ $kernel_size_slider.addEventListener('input', (e) => {
   last_size_interval = interval;
 });
 $kernel_sigma_slider.addEventListener('input', (e) => {
-  console.log(`kernel sigma: ${$kernel_sigma_slider.value}`);
-  // get_preview(current_file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+  seconds_since_sigma_change = 0;
+  $upload_dialog_window_image.classList.add('getting-preview');
+  if (last_sigma_interval)
+    clearInterval(last_sigma_interval);
+  let interval = setInterval(() => {
+    seconds_since_sigma_change += 1;
+    console.log(seconds_since_sigma_change);
+    if (seconds_since_sigma_change >= 1) {
+      console.log(`kernel sigma: ${$kernel_sigma_slider.value}`);
+      get_preview(current_file, $kernel_size_slider.value, $kernel_sigma_slider.value);
+      clearInterval(interval);
+    }
+  }, 1000);
+  last_sigma_interval = interval;
 });
 function handleFile(file) {
   if (!file.type.match('image.*')) {
