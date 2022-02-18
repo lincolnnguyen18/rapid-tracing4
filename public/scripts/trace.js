@@ -50,9 +50,6 @@ $upload_dialog_upload_button.addEventListener('click', () => {
     });
   }
 });
-// $upload_dialog.addEventListener('click', (e) => {
-//   close_upload_dialog();
-// });
 $upload_dialog_window.addEventListener('click', (e) => {
   e.stopPropagation();
 });
@@ -248,6 +245,10 @@ const $library_dialog_window_close_button = document.querySelectorAll('#library-
 const $library_dialog_window_placeholder = document.querySelectorAll('#library-dialog-window > div.placeholder')[0];
 const $library_dialog_window_images = document.querySelectorAll('#library-dialog-window > div.images')[0];
 
+$library_dialog.addEventListener('click', (e) => {
+  close_library_dialog();
+});
+
 const open_library_dialog = () => {
   $library_dialog.classList.remove('hidden');
   $container.classList.add('blurred');
@@ -313,8 +314,8 @@ $library_dialog_window_close_button.addEventListener('click', () => {
 // keydown events
 document.addEventListener('keydown', (e) => {
   if (e.key == 'Escape') {
-    if (upload_dialog_open)
-      close_upload_dialog();
+    close_upload_dialog();
+    close_library_dialog();
   }
 });
 window.addEventListener('paste', e => {

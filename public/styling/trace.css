@@ -124,13 +124,13 @@ html, body {
 }
 
 #library-dialog .dialog-window {
-  max-height: 90vh;
-  max-width: 90vw;
+  height: 90vh;
+  /* max-width: 90vw; */
   padding-top: 0;
   padding-left: 0;
   padding-right: 0;
   width: 430px;
-  min-height: 400px;
+  /* min-height: 400px; */
 }
 
 #library-dialog .images {
@@ -139,6 +139,7 @@ html, body {
   gap: 15px;
   overflow: auto;
   padding: 15px;
+  height: 100%;
 }
 
 #library-dialog .images img {
@@ -154,7 +155,7 @@ html, body {
   align-items: center;
   justify-content: center;
   width: 400px;
-  height: 400px;
+  height: 100%;
   margin: 0 auto;
 }
 
