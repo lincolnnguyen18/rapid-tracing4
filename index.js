@@ -130,25 +130,15 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
           filenames.forEach(filename => {
             temp_files_seconds_since_last_access[req.id][filename] = 0;
             let interval = setInterval(() => {
-              if (temp_files_seconds_since_last_access[req.id][filename] >= 100) {
+              if (temp_files_seconds_since_last_access[req.id][filename] >= 60) {
                 fs.unlinkSync(`${__dirname}/shared/${req.id}/temp/${filename}`);
                 clearInterval(interval);
               } else {
                 temp_files_seconds_since_last_access[req.id][filename]++;
-                // console.log(temp_files_seconds_since_last_access[req.id][filename]);
+                // console.log(`${req.id}, ${filename}: ${temp_files_seconds_since_last_access[req.id][filename]}`);
               }
             }, 1000);
           });
-          // setTimeout(() => {
-          //   let filenames = [json.original, json.outline, json.details];
-          //   filenames.forEach(filename => {
-          //     fs.unlink(__dirname + '/shared/' + filename, function(err) {
-          //       if (err) {
-          //         console.log(err);
-          //       }
-          //     });
-          //   });
-          // }, 3000);
           res.send(json);
         });
       }
@@ -168,6 +158,7 @@ app.get('/login', isNotLoggedIn, (req, res) => {
 app.get("/shared/:id/temp/:filename", isLoggedIn, (req, res) => {
   console.log(`User with id ${req.id} is trying to access file named '${req.params.filename}' directory with id ${req.params.id}`);
   if (req.params.id == req.id) {
+    temp_files_seconds_since_last_access[req.id][req.params.filename] = 0;
     let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}`;
     if (fs.existsSync(path)) {
       res.sendFile(path);
