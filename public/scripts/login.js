@@ -95,7 +95,7 @@ $register_button.addEventListener('click', () => {
         remaining_time--;
         if (remaining_time == 0) {
           clearInterval(interval);
-          // window.location.href = '/';
+          window.location.href = '/';
         }
       }
       interval_function();

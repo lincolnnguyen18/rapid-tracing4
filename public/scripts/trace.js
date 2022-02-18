@@ -1,4 +1,7 @@
+import Cookies from '/modules/js.cookie.min.mjs';
+
 const body = document.querySelectorAll('body')[0];
+const user_id = parseInt(Cookies.get('id'));
 let current_file = null;
 let preview_json = null;
 
@@ -72,16 +75,16 @@ const get_preview = async (file, size, sigma) => {
   .then(res => res.json())
   .then(json => {
     preview_json = json;
-    // $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+    // $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.outline}`;
     switch (selected_button) {
       case $upload_dialog_header_modes_original_button:
-        $upload_dialog_window_image.src = `/shared/${preview_json.original}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.original}`;
         break;
       case $upload_dialog_header_modes_outline_button:
-        $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.outline}`;
         break;
       case $upload_dialog_header_modes_details_button:
-        $upload_dialog_window_image.src = `/shared/${preview_json.details}`;
+        $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.details}`;
         break;
     }
   });
@@ -209,19 +212,19 @@ $upload_dialog_header_modes_original_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_original_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${preview_json.original}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.original}`;
 });
 $upload_dialog_header_modes_outline_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_outline_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${preview_json.outline}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.outline}`;
 });
 $upload_dialog_header_modes_details_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_details_button;
   selected_button.classList.add('selected-mode');
-  $upload_dialog_window_image.src = `/shared/${preview_json.details}`;
+  $upload_dialog_window_image.src = `/shared/${user_id}/${preview_json.details}`;
 });
 
 // keydown events

@@ -32,20 +32,22 @@ def resize(image):
 @app.route("/get-picture-preview", methods=["POST"])
 def get_picture_preview():
   body = request.get_json()
-  original_filename = body["filename"]
+  original_filename = body["filename"].lower()
+  user_id = f"user_{body['user_id']}"
+  print(f"user_id: {user_id}")
   filename_only = original_filename.split(".")[0]
   extension = original_filename.split(".")[1]
   outline_filename = filename_only + '_outline.' + extension
   details_filename = filename_only + '_details.' + extension
   size = request.args.get('size', type=int)
   sigma = request.args.get('sigma', type=int)
-  image = cv2.imread('../shared/' + original_filename)
+  image = cv2.imread(f"../shared/{user_id}/{original_filename}")
   image = resize(image)
-  cv2.imwrite('../shared/' + original_filename, image)
+  cv2.imwrite(f"../shared/{user_id}/{original_filename}", image)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)
   outline = cv2.subtract(blurred_image, image)
   details = cv2.subtract(image, blurred_image)
-  cv2.imwrite('../shared/' + outline_filename, outline)
-  cv2.imwrite('../shared/' + details_filename, details)
+  cv2.imwrite(f"../shared/{user_id}/{outline_filename}", outline)
+  cv2.imwrite(f"../shared/{user_id}/{details_filename}", details)
   return jsonify({"message": "success", "original": original_filename, "outline": outline_filename, "details": details_filename})
