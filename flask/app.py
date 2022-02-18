@@ -18,7 +18,7 @@ def genGaussianKernel(width, sigma):
   return kernel_2d
 
 def resize(image):
-  max_dim = 1600
+  max_dim = 2000
   (h, w) = image.shape[:2]
   if h > w:
     new_h = max_dim
@@ -27,6 +27,8 @@ def resize(image):
     new_w = max_dim
     new_h = (new_w * h) // w
   new_dim = (new_w, new_h)
+  if new_dim == image.shape[:2]:
+    return image
   return cv2.resize(image, new_dim, interpolation = cv2.INTER_AREA)
 
 @app.route("/get-picture-preview", methods=["POST"])

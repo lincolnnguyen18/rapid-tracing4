@@ -65,7 +65,6 @@ const file_cleared = () => {
   $upload_dialog_upload_button.classList.add('disabled');
 };
 const get_preview = async (file, size, sigma) => {
-  console.log(size, sigma);
   const formData = new FormData();
   formData.append('picture', file);
   fetch('/api/get-picture-preview?size=' + size + '&sigma=' + sigma, {
@@ -150,11 +149,12 @@ function handleFile(file) {
     let image = new Image();
     image.src = e.target.result;
     image.onload = () => {
-      const max_dimension = 1600;
-      $kernel_size_slider.value = Math.min(parseInt(Math.min(image.width, image.height) / 33), max_dimension / 33);
-      $kernel_size_slider.max = parseInt($kernel_size_slider.value * 4);
-      $kernel_sigma_slider.value = Math.min(parseInt(Math.min(image.width, image.height) / 66), max_dimension / 66);
-      $kernel_sigma_slider.max = parseInt($kernel_sigma_slider.value * 4);
+      const max_dimension = 2000;
+      const max_kernel = Math.min(Math.max(image.width, image.height), max_dimension);
+      $kernel_size_slider.max = max_kernel;
+      $kernel_sigma_slider.max = max_kernel;
+      $kernel_size_slider.value = $kernel_size_slider.max * 0.05;
+      $kernel_sigma_slider.value = $kernel_sigma_slider.max * 1;
       get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value).then(() => {
         $upload_dialog_window_image.onload = () => {
           $upload_dialog_window_header.classList.remove('disabled');
@@ -234,6 +234,12 @@ $upload_dialog_header_modes_details_button.addEventListener('click', () => {
 //       close_upload_dialog();
 //   }
 // });
+window.addEventListener('paste', e => {
+  const files = e.clipboardData.files;
+  if (files.length > 0) {
+    handleFile(files[0]);
+  }
+});
 
 // logout
 const logout_button = document.querySelectorAll('#logout-button')[0];

@@ -104,7 +104,7 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
-    const temp_name = Math.random().toString(36).substring(7) + file.name.substring(file.name.lastIndexOf('.'));
+    const temp_name = Math.random().toString(36).substring(7) + file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
     file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}`, function(err) {
       if (err) {
         console.log(err);
