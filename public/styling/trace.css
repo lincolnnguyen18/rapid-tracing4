@@ -335,3 +335,7 @@ div#container.blurred * {
 .half-opacity {
   opacity: 0.5!important;
 }
+
+.invisible {
+  visibility: hidden!important;
+}
