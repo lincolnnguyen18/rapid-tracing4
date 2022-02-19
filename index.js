@@ -173,32 +173,41 @@ router.post('/add-time-record', isLoggedIn, function (req, res) {
 //   return jsonify({"temp_name": temp_name})
 router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
   let { picture_id } = req.body;
-  fetch('http://localhost:3001/get-picture-timerecords-chart', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ user_id: req.id, picture_id: picture_id })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const { temp_name } = data;
-    if (!temp_files_seconds_since_last_access[req.id])
-      temp_files_seconds_since_last_access[req.id] = {};
-    temp_files_seconds_since_last_access[req.id][temp_name] = 0;
-    let interval = setInterval(() => {
-      if (temp_files_seconds_since_last_access[req.id][temp_name] >= 30) {
-        fs.unlinkSync(`./shared/${req.id}/temp/${temp_name}.png`);
-        clearInterval(interval);
-        delete temp_files_seconds_since_last_access[req.id][temp_name];
-      } else {
-        temp_files_seconds_since_last_access[req.id][temp_name]++;
-        console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
-      }
-    }, 1000);
-    console.log(data);
-    res.send(data);
-  })
+  if (!picture_id) {
+    res.send({ error: 'No picture id provided.' });
+  } else {
+    console.log('/get-picture-timerecords-chart, req.id:' + req.id);
+    fetch('http://localhost:3001/get-picture-timerecords-chart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ user_id: req.id, picture_id: picture_id })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const { temp_name } = data;
+      if (!temp_files_seconds_since_last_access[req.id])
+        temp_files_seconds_since_last_access[req.id] = {};
+      temp_files_seconds_since_last_access[req.id][temp_name] = 0;
+      let interval = setInterval(() => {
+        if (temp_files_seconds_since_last_access[req.id][temp_name] >= 30) {
+          fs.unlinkSync(`./shared/${req.id}/temp/${temp_name}`);
+          clearInterval(interval);
+          delete temp_files_seconds_since_last_access[req.id][temp_name];
+        } else {
+          temp_files_seconds_since_last_access[req.id][temp_name]++;
+          console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+        }
+      }, 1000);
+      console.log(data);
+      res.send(data);
+    })
+    .catch(err => {
+      console.log(err);
+      res.send({ error: 'Could not get picture time records chart.' });
+    });
+  }
 });
 
 /* file upload stuff */

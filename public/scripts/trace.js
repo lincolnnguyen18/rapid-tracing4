@@ -362,6 +362,8 @@ $controls_start_button.onclick = () => {
     .then(json => {
       if (json.length > 0) {
         shuffled = _.shuffle(json);
+        iteration = 0;
+        $chart_button.classList.remove('disabled');
         // console.log(shuffled);
         // shuffled.forEach(picture => {
         //   const { id, filename, extension } = picture;
@@ -379,26 +381,11 @@ $controls_start_button.onclick = () => {
     $controls_done_button.classList.add('disabled');
     $top_region.classList.add('invisible');
     $modes_region.classList.add('invisible');
+    $chart_button.classList.add('disabled');
     clearInterval(timer_interval);
     seconds_since_start = 0;
   }
 }
-
-// router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
-//   let { picture_id } = req.body;
-//   fetch('http://localhost:3001/get-picture-timerecords-chart', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({ user_id: req.id, picture_id: picture_id })
-//   })
-//   .then(res => res.json())
-//   .then(data => {
-//     console.log(data);
-//     res.send(data);
-//   })
-// });
 
 $controls_done_button.addEventListener('click', () => {
   const { id, filename, extension } = shuffled[iteration];
@@ -420,15 +407,15 @@ $controls_done_button.addEventListener('click', () => {
   .then(res => res.json())
   .then(json => {
     console.log(json);
-    fetch('/api/get-picture-timerecords-chart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ picture_id: id })
-    })
-    .then(res => res.json())
-    .then(data => console.log(data));
+    // fetch('/api/get-picture-timerecords-chart', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   },
+    //   body: JSON.stringify({ picture_id: id })
+    // })
+    // .then(res => res.json())
+    // .then(data => console.log(data));
   });
   // clearInterval(timer_interval);
   // seconds_since_start = 0;
@@ -440,11 +427,56 @@ $controls_done_button.addEventListener('click', () => {
   // }, 1000);
 });
 
+const $chart_button = document.querySelectorAll('#chart-button')[0];
+const $chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
+const $chart_dialog_window = document.querySelectorAll('#timerecord-chart-dialog-window')[0];
+const $chart_dialog_window_img = document.querySelectorAll('#timerecord-chart-dialog-window > img')[0];
+const $chart_dialog_continue_button = document.querySelectorAll('#timerecord-chart-dialog-continue-button')[0];
+const $timerecord_chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
+
+const close_chart_dialog = () => {
+  $chart_dialog.classList.add('hidden');
+  $container.classList.remove('blurred');
+}
+
+$chart_button.addEventListener('click', () => {
+  const current_picture_id = shuffled[iteration].id;
+  if (!current_picture_id) {
+    return;
+  }
+  $chart_dialog.classList.remove('hidden');
+  $container.classList.add('blurred');
+  fetch('/api/get-picture-timerecords-chart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ picture_id: shuffled[iteration].id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    const { temp_name } = data;
+    const path = `/shared/${user_id}/temp/${temp_name}`;
+    $chart_dialog_window_img.src = path;
+  });
+});
+$chart_dialog_continue_button.addEventListener('click', () => {
+  close_chart_dialog();
+});
+$chart_dialog_window.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+$timerecord_chart_dialog.addEventListener('click', () => {
+  close_chart_dialog();
+});
+
 // keydown events
 document.addEventListener('keydown', (e) => {
   if (e.key == 'Escape') {
     close_upload_dialog();
     close_library_dialog();
+    close_chart_dialog();
   }
 });
 window.addEventListener('paste', e => {

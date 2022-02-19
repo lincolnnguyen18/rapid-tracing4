@@ -316,6 +316,18 @@ html, body {
   text-align: center;
 }
 
+/* chart dialog */
+#timerecord-chart-dialog-window > img.top {
+  width: 640px;
+  height: 480px;
+  background: #e3e3e3;
+}
+#timerecord-chart-dialog-window > div.bottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
 /* global stuff */
 .hidden {
   display: none!important;
@@ -360,4 +372,10 @@ div#container.blurred * {
 .no-select {
   user-select: none!important;
   -webkit-user-select: none!important;
+}
+
+.button-pointer {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
 }

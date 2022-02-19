@@ -7,15 +7,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
-    <!-- <div id="timerecord-chart-dialog" class="dialog">
+    <div id="timerecord-chart-dialog" class="dialog hidden">
       <div id="timerecord-chart-dialog-window" class="dialog-window">
-        <div class="top">
-        </div>
+        <img class="top">
+        </img>
         <div class="bottom">
-          <span>Continue</span>
+          <span class="button-pointer" id="timerecord-chart-dialog-continue-button">Continue</span>
         </div>
       </div>
-    </div> -->
+    </div>
     <div id="library-dialog" class="dialog hidden">
       <div id="library-dialog-window" class="dialog-window">
         <div class="placeholder">
@@ -104,7 +104,7 @@
       <div id="bottom-right">
         <span class="material-icons-round" id="upload-button">file_upload</span>
         <span class="material-icons-round" id="pictures-button">photo_library</span>
-        <span class="material-icons-round" id="chart-button">trending_up</span>
+        <span class="material-icons-round disabled" id="chart-button">trending_up</span>
         <span class="material-icons-round" id="delete-button">delete</span>
         <span class="material-icons-round" id="logout-button">logout</span>
       </div>

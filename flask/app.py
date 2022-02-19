@@ -89,8 +89,10 @@ def get_picture_timerecords_chart():
   user_id = body['user_id']
   picture_id = body['picture_id']
   cursor = mysql.connection.cursor()
+  print(user_id, picture_id)
   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
   result = cursor.fetchall()
+  print(result)
   N = len(result)
   x = [dt.datetime.strptime(str(record[2]), "%Y-%m-%d %H:%M:%S") for record in result]
   y = [record[1] for record in result]
@@ -104,4 +106,4 @@ def get_picture_timerecords_chart():
   temp_name = get_temp_name(user_id)
   plt.savefig(f"../shared/{user_id}/temp/{temp_name}.png")
   plt.close()
-  return jsonify({"temp_name": temp_name})
+  return jsonify({"temp_name": f"{temp_name}.png"})
