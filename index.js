@@ -151,6 +151,41 @@ router.post('/add-time-record', isLoggedIn, function (req, res) {
     }
   });
 });
+// @app.route("/get-picture-timerecords-chart", methods=["POST"])
+// def get_picture_timerecords_chart():
+//   body = request.get_json()
+//   user_id = body['user_id']
+//   picture_id = body['picture_id']
+//   cursor = mydb.cursor()
+//   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
+//   result = cursor.fetchall()
+//   N = len(result)
+//   x = [dt.datetime.strptime(str(record[2]), "%Y-%m-%d %H:%M:%S") for record in result]
+//   y = [record[1] for record in result]
+//   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+//   date_interval = max(1, int(N/10))
+//   plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=date_interval))
+//   plt.plot(x, y)
+//   plt.gcf().autofmt_xdate()
+//   temp_name = get_temp_name(user_id)
+//   plt.savefig(f"../shared/{user_id}/temp/{temp_name}.png")
+//   plt.close()
+//   return jsonify({"temp_name": temp_name})
+router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
+  let { picture_id } = req.body;
+  fetch('http://localhost:3001/get-picture-timerecords-chart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ user_id: req.id, picture_id: picture_id })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(data);
+    res.send(data);
+  })
+});
 
 /* file upload stuff */
 router.post('/get-picture-preview', isLoggedIn, (req, res) => {
@@ -159,56 +194,62 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
   console.log('/get-picture-preview called');
   if (req.files && req.files.picture) {
     let file = req.files.picture;
-    let temp_name = Math.random().toString(36).substring(7)
-    while (fs.existsSync(`./shared/${req.id}/temp/${temp_name}` || fs.existsSync(`./shared/${req.id}/library/${temp_name}`))) {
-      temp_name = Math.random().toString(36).substring(7)
-    }
-    const extension = file.name.substring(file.name.lastIndexOf('.')+1).toLowerCase();
-    if (!fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
-      fs.mkdirSync(`./shared/${req.id}/temp/${temp_name}`);
-    }
-    file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}/original.${extension}`, function(err) {
-      if (err) {
-        console.log(err);
-        res.send({ error: 'Error uploading file.' });
-      } else {
-        fetch(`http://localhost:3001/get-picture-preview?size=${size}&sigma=${sigma}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            filename: temp_name,
-            extension: extension,
-            user_id: req.id
-          })
-        })
-        .then(res => res.json())
-        .then(json => {
-          console.log(json);
-          if (!temp_files_seconds_since_last_access[req.id]) {
-            temp_files_seconds_since_last_access[req.id] = {};
-          }
-          temp_files_seconds_since_last_access[req.id][temp_name] = 0;
-          let interval = setInterval(() => {
-            if (temp_files_seconds_since_last_access[req.id][temp_name] >= 60) {
-              if (fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
-                fs.rm(`${__dirname}/shared/${req.id}/temp/${temp_name}`, { recursive: true, force: true }, function(err) {
-                  if (err) {
-                    console.log(err);
-                  }
-                });
-              }
-              clearInterval(interval);
-            } else {
-              temp_files_seconds_since_last_access[req.id][temp_name]++;
-              console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
-            }
-          }, 1000);
-          res.send({ filename: temp_name, extension: extension });
-        });
+    console.log(file.mimetype);
+    // only allow png, jpeg, and jpg
+    if (file.mimetype === 'image/png' || file.mimetype === 'image/jpeg' || file.mimetype === 'image/jpg') {
+      let temp_name = Math.random().toString(36).substring(7)
+      while (fs.existsSync(`./shared/${req.id}/temp/${temp_name}` || fs.existsSync(`./shared/${req.id}/library/${temp_name}`))) {
+        temp_name = Math.random().toString(36).substring(7)
       }
-    });
+      const extension = file.name.substring(file.name.lastIndexOf('.')+1).toLowerCase();
+      if (!fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
+        fs.mkdirSync(`./shared/${req.id}/temp/${temp_name}`);
+      }
+      file.mv(`${__dirname}/shared/${req.id}/temp/${temp_name}/original.${extension}`, function(err) {
+        if (err) {
+          console.log(err);
+          res.send({ error: 'Error uploading file.' });
+        } else {
+          fetch(`http://localhost:3001/get-picture-preview?size=${size}&sigma=${sigma}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              filename: temp_name,
+              extension: extension,
+              user_id: req.id
+            })
+          })
+          .then(res => res.json())
+          .then(json => {
+            console.log(json);
+            if (!temp_files_seconds_since_last_access[req.id]) {
+              temp_files_seconds_since_last_access[req.id] = {};
+            }
+            temp_files_seconds_since_last_access[req.id][temp_name] = 0;
+            let interval = setInterval(() => {
+              if (temp_files_seconds_since_last_access[req.id][temp_name] >= 60) {
+                if (fs.existsSync(`./shared/${req.id}/temp/${temp_name}`)) {
+                  fs.rm(`${__dirname}/shared/${req.id}/temp/${temp_name}`, { recursive: true, force: true }, function(err) {
+                    if (err) {
+                      console.log(err);
+                    }
+                  });
+                }
+                clearInterval(interval);
+              } else {
+                temp_files_seconds_since_last_access[req.id][temp_name]++;
+                console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+              }
+            }, 1000);
+            res.send({ filename: temp_name, extension: extension });
+          });
+        }
+      });
+    } else {
+      res.send({ error: 'Invalid file type.' });
+    }
   } else {
     res.send({ error: 'Error uploading file.' });
   }

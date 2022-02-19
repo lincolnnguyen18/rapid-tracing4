@@ -80,19 +80,30 @@ const get_preview = async (file, size, sigma) => {
   })
   .then(res => res.json())
   .then(json => {
-    preview_json = json;
-    // console.log(`preview_json: ${JSON.stringify(preview_json)}`);
-    // $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
-    switch (selected_button) {
-      case $upload_dialog_header_modes_original_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/original.${preview_json.extension}`;
-        break;
-      case $upload_dialog_header_modes_outline_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/outline.${preview_json.extension}`;
-        break;
-      case $upload_dialog_header_modes_details_button:
-        $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
-        break;
+    console.log(json);
+    if (!json.error) {
+      preview_json = json;
+      // console.log(`preview_json: ${JSON.stringify(preview_json)}`);
+      // $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.outline}`;
+      switch (selected_button) {
+        case $upload_dialog_header_modes_original_button:
+          $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/original.${preview_json.extension}`;
+          break;
+        case $upload_dialog_header_modes_outline_button:
+          $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/outline.${preview_json.extension}`;
+          break;
+        case $upload_dialog_header_modes_details_button:
+          $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
+          break;
+      }
+    } else {
+      $upload_dialog_message.innerText = json.error;
+      $upload_dialog_message.classList.remove('hidden');
+      $upload_dialog_placeholder.classList.remove('green');
+      $upload_dialog_placeholder_text.innerText = 'Drag and drop a picture here.\nOr click here to select a picture to upload.';
+      setTimeout(() => {
+        $upload_dialog_message.classList.add('hidden');
+      }, 3000);
     }
   });
 }

@@ -5,6 +5,20 @@ from flask import jsonify
 import cv2
 import numpy as np
 import zipfile
+import mysql.connector
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import datetime as dt
+import random
+import string
+import os
+
+mydb = mysql.connector.connect(
+  host="localhost",
+  user="admin",
+  password="pass123",
+  database="rapid_tracing"
+)
 
 app = Flask(__name__)
 
@@ -30,6 +44,15 @@ def resize(image, max_dim):
     return image
   return cv2.resize(image, new_dim, interpolation = cv2.INTER_AREA)
 
+def get_temp_name(user_id):
+  # get list of files in ../shared/{user_id}/temp
+  temp_dir = '../shared/' + user_id + '/temp'
+  temp_files = os.listdir(temp_dir)
+  temp_name = ''.join(random.choice(string.digits + string.ascii_letters) for _ in range(10))
+  while temp_name in temp_files:
+    temp_name = ''.join(random.choice(string.digits + string.ascii_letters) for _ in range(10))
+  return temp_name
+
 @app.route("/get-picture-preview", methods=["POST"])
 def get_picture_preview():
   body = request.get_json()
@@ -51,3 +74,24 @@ def get_picture_preview():
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/details.{extension}", details)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/thumbnail.{extension}", thumbnail)
   return jsonify({"message": "success"})
+
+@app.route("/get-picture-timerecords-chart", methods=["POST"])
+def get_picture_timerecords_chart():
+  body = request.get_json()
+  user_id = body['user_id']
+  picture_id = body['picture_id']
+  cursor = mydb.cursor()
+  cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
+  result = cursor.fetchall()
+  N = len(result)
+  x = [dt.datetime.strptime(str(record[2]), "%Y-%m-%d %H:%M:%S") for record in result]
+  y = [record[1] for record in result]
+  plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+  date_interval = max(1, int(N/10))
+  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=date_interval))
+  plt.plot(x, y)
+  plt.gcf().autofmt_xdate()
+  temp_name = get_temp_name(user_id)
+  plt.savefig(f"../shared/{user_id}/temp/{temp_name}.png")
+  plt.close()
+  return jsonify({"temp_name": temp_name})
