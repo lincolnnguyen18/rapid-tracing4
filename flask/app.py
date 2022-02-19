@@ -92,14 +92,12 @@ def get_picture_timerecords_chart():
   print(user_id, picture_id)
   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
   result = cursor.fetchall()
-  print(result)
   N = len(result)
-  x = [dt.datetime.strptime(str(record[2]), "%Y-%m-%d %H:%M:%S") for record in result]
+  x = [record[2] for record in result]
   y = [record[1] for record in result]
   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-  date_interval = max(1, int(N/10))
-  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=date_interval))
-  formatter = ticker.FuncFormatter(lambda ms, y: time.strftime('%M:%S', time.gmtime(ms)))
+  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))
+  formatter = ticker.FuncFormatter(lambda s, y: time.strftime('%M:%S', time.gmtime(s)))
   plt.gca().yaxis.set_major_formatter(formatter)
   plt.plot(x, y)
   plt.gcf().autofmt_xdate()

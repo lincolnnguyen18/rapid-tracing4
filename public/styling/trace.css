@@ -317,10 +317,13 @@ html, body {
 }
 
 /* chart dialog */
-#timerecord-chart-dialog-window > img.top {
+#timerecord-chart-dialog-window .top-placeholder {
   width: 640px;
   height: 480px;
   background: #e3e3e3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #timerecord-chart-dialog-window > div.bottom {
   display: flex;

@@ -430,14 +430,17 @@ $controls_done_button.addEventListener('click', () => {
 const $chart_button = document.querySelectorAll('#chart-button')[0];
 const $chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
 const $chart_dialog_window = document.querySelectorAll('#timerecord-chart-dialog-window')[0];
-const $chart_dialog_window_img = document.querySelectorAll('#timerecord-chart-dialog-window > img')[0];
+const $chart_dialog_window_img = document.querySelectorAll('#timerecord-chart-dialog-window .top')[0];
+const $chart_dialog_window_placeholder_text = document.querySelectorAll('#timerecord-chart-dialog-window .placeholder-text')[0];
 const $chart_dialog_continue_button = document.querySelectorAll('#timerecord-chart-dialog-continue-button')[0];
 const $timerecord_chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
 
 const close_chart_dialog = () => {
+  $chart_dialog_window_img.classList.add('hidden');
   $chart_dialog_window_img.src = '';
   $chart_dialog.classList.add('hidden');
   $container.classList.remove('blurred');
+  $chart_dialog_window_placeholder_text.classList.remove('hidden');
 }
 
 $chart_button.addEventListener('click', () => {
@@ -460,6 +463,10 @@ $chart_button.addEventListener('click', () => {
     const { temp_name } = data;
     const path = `/shared/${user_id}/temp/${temp_name}`;
     $chart_dialog_window_img.src = path;
+    $chart_dialog_window_img.onload = () => {
+      $chart_dialog_window_placeholder_text.classList.add('hidden');
+      $chart_dialog_window_img.classList.remove('hidden');
+    }
   });
 });
 $chart_dialog_continue_button.addEventListener('click', () => {
