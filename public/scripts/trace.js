@@ -435,6 +435,7 @@ const $chart_dialog_continue_button = document.querySelectorAll('#timerecord-cha
 const $timerecord_chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
 
 const close_chart_dialog = () => {
+  $chart_dialog_window_img.src = '';
   $chart_dialog.classList.add('hidden');
   $container.classList.remove('blurred');
 }
