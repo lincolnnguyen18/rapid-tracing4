@@ -151,26 +151,6 @@ router.post('/add-time-record', isLoggedIn, function (req, res) {
     }
   });
 });
-// @app.route("/get-picture-timerecords-chart", methods=["POST"])
-// def get_picture_timerecords_chart():
-//   body = request.get_json()
-//   user_id = body['user_id']
-//   picture_id = body['picture_id']
-//   cursor = mydb.cursor()
-//   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
-//   result = cursor.fetchall()
-//   N = len(result)
-//   x = [dt.datetime.strptime(str(record[2]), "%Y-%m-%d %H:%M:%S") for record in result]
-//   y = [record[1] for record in result]
-//   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-//   date_interval = max(1, int(N/10))
-//   plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=date_interval))
-//   plt.plot(x, y)
-//   plt.gcf().autofmt_xdate()
-//   temp_name = get_temp_name(user_id)
-//   plt.savefig(f"../shared/{user_id}/temp/{temp_name}.png")
-//   plt.close()
-//   return jsonify({"temp_name": temp_name})
 router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
   let { picture_id } = req.body;
   if (!picture_id) {
@@ -186,22 +166,26 @@ router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
     })
     .then(res => res.json())
     .then(data => {
-      const { temp_name } = data;
-      if (!temp_files_seconds_since_last_access[req.id])
-        temp_files_seconds_since_last_access[req.id] = {};
-      temp_files_seconds_since_last_access[req.id][temp_name] = 0;
-      let interval = setInterval(() => {
-        if (temp_files_seconds_since_last_access[req.id][temp_name] >= 30) {
-          fs.unlinkSync(`./shared/${req.id}/temp/${temp_name}`);
-          clearInterval(interval);
-          delete temp_files_seconds_since_last_access[req.id][temp_name];
-        } else {
-          temp_files_seconds_since_last_access[req.id][temp_name]++;
-          console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
-        }
-      }, 1000);
-      console.log(data);
-      res.send(data);
+      if (data.error) {
+        res.send(data);
+      } else {
+        const { temp_name } = data;
+        if (!temp_files_seconds_since_last_access[req.id])
+          temp_files_seconds_since_last_access[req.id] = {};
+        temp_files_seconds_since_last_access[req.id][temp_name] = 0;
+        let interval = setInterval(() => {
+          if (temp_files_seconds_since_last_access[req.id][temp_name] >= 30) {
+            fs.unlinkSync(`./shared/${req.id}/temp/${temp_name}`);
+            clearInterval(interval);
+            delete temp_files_seconds_since_last_access[req.id][temp_name];
+          } else {
+            temp_files_seconds_since_last_access[req.id][temp_name]++;
+            console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+          }
+        }, 1000);
+        console.log(data);
+        res.send(data);
+      }
     })
     .catch(err => {
       console.log(err);

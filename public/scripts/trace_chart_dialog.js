@@ -5,6 +5,7 @@ window.close_chart_dialog = () => {
   $container.classList.remove('blurred');
   $chart_dialog_window_placeholder_text.classList.remove('hidden');
   waiting_for_chart_to_close = false;
+  $chart_dialog_window_placeholder_text.innerHTML = 'Loading...';
 }
 
 window.display_chart = () => {
@@ -23,13 +24,17 @@ window.display_chart = () => {
   })
   .then(res => res.json())
   .then(data => {
-    console.log(data);
-    const { temp_name } = data;
-    const path = `/shared/${user_id}/temp/${temp_name}`;
-    $chart_dialog_window_img.src = path;
-    $chart_dialog_window_img.onload = () => {
-      $chart_dialog_window_placeholder_text.classList.add('hidden');
-      $chart_dialog_window_img.classList.remove('hidden');
+    if (data.error) {
+      $chart_dialog_window_placeholder_text.innerHTML = data.error;
+    } else {
+      console.log(data);
+      const { temp_name } = data;
+      const path = `/shared/${user_id}/temp/${temp_name}`;
+      $chart_dialog_window_img.src = path;
+      $chart_dialog_window_img.onload = () => {
+        $chart_dialog_window_placeholder_text.classList.add('hidden');
+        $chart_dialog_window_img.classList.remove('hidden');
+      }
     }
   });
 }

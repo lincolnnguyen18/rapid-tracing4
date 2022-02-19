@@ -20,7 +20,6 @@ $controls_start_button.onclick = () => {
         shuffled = _.shuffle(json);
         iteration = 0;
         $chart_button.classList.remove('disabled');
-        // console.log(shuffled);
       }
       timer_interval = setInterval(() => {
         seconds_since_start++;
