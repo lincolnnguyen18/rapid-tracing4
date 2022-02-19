@@ -45,6 +45,7 @@ html, body {
 #modes > span {
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #modes .selected-mode {
@@ -96,6 +97,7 @@ html, body {
 #bottom-right > span, #bottom-left > span {
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 .dialog {
@@ -148,6 +150,7 @@ html, body {
   /* max-height: 400px; */
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #library-dialog-window > div.placeholder {
@@ -170,6 +173,7 @@ html, body {
 #library-dialog .buttons > span {
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #library-dialog .delete-button {
@@ -185,6 +189,7 @@ html, body {
   width: 100%;
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #upload-dialog-header-modes {
@@ -198,6 +203,7 @@ html, body {
 #upload-dialog-header-modes span {
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
   padding: 7px;
 }
 
@@ -267,6 +273,7 @@ html, body {
 #upload-dialog-window-icon {
   font-size: 100px;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #upload-dialog-window .dialog-bottom {
@@ -280,6 +287,7 @@ html, body {
 #upload-dialog-window .dialog-bottom span {
   cursor: pointer;
   user-select: none;
+  -webkit-user-select: none;
 }
 
 #upload-dialog-window .buttons {
@@ -316,12 +324,14 @@ html, body {
   opacity: 0.2!important;
   cursor: default!important;
   user-select: none!important;
+  -webkit-user-select: none!important;
   pointer-events: none!important;
 }
 
 .disabled * {
   cursor: default!important;
   user-select: none!important;
+  -webkit-user-select: none!important;
   pointer-events: none!important;
 }
 
@@ -344,4 +354,9 @@ div#container.blurred * {
 
 .invisible {
   visibility: hidden!important;
+}
+
+.no-select {
+  user-select: none!important;
+  -webkit-user-select: none!important;
 }

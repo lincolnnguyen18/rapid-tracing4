@@ -316,6 +316,8 @@ $library_dialog_window_close_button.addEventListener('click', () => {
 // start stop controls
 const $controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
 const $controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];
+const $top_region = document.querySelectorAll('#top')[0];
+const $modes_region = document.querySelectorAll('#modes')[0];
 let controls_started = false;
 let shuffled = null;
 let iteration = 0;
@@ -325,6 +327,8 @@ $controls_start_button.onclick = () => {
   if (controls_started) {
     $controls_done_button.classList.remove('disabled');
     $controls_start_button.innerHTML = 'Stop';
+    $top_region.classList.remove('invisible');
+    $modes_region.classList.remove('invisible');
     fetch(`/api/get-pictures`)
     .then(res => res.json())
     .then(json => {
@@ -340,6 +344,8 @@ $controls_start_button.onclick = () => {
   } else {
     $controls_start_button.innerHTML = 'Start';
     $controls_done_button.classList.add('disabled');
+    $top_region.classList.add('invisible');
+    $modes_region.classList.add('invisible');
   }
 }
 

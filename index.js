@@ -129,9 +129,6 @@ router.post('/add-picture', isLoggedIn, function (req, res) {
     }
   });
 });
-// CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
-//   SELECT filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id;
-// END//
 /* get user pictures stuff */
 router.get('/get-pictures', isLoggedIn, function (req, res) {
   conn.execute("CALL get_user_pictures(?)", [req.id], function(err, result) {
@@ -139,6 +136,23 @@ router.get('/get-pictures', isLoggedIn, function (req, res) {
       res.send({ error: 'Could not get user pictures.' });
     } else {
       res.send(result[0]);
+    }
+  });
+});
+
+// CREATE PROCEDURE add_time_record(_minutes REAL, _user_id INTEGER, _picture_id INTEGER) BEGIN
+//   INSERT INTO time_records (minutes) VALUES (_minutes);
+//   INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());
+// END//
+
+// time record stuff
+router.post('/add-time-record', isLoggedIn, function (req, res) {
+  let { minutes, picture_id } = req.body;
+  conn.execute("CALL add_time_record(?, ?, ?)", [minutes, req.id, picture_id], function(err, result) {
+    if (err) {
+      res.send({ error: 'Could not add time record.' });
+    } else {
+      res.send({ message: 'OK' });
     }
   });
 });
