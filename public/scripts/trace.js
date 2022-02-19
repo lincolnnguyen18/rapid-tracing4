@@ -327,6 +327,7 @@ let timer_interval = null;
 
 $controls_start_button.onclick = () => {
   controls_started = !controls_started;
+  $left_time.innerHTML = '0:00';
   if (controls_started) {
     $controls_done_button.classList.remove('disabled');
     $controls_start_button.innerHTML = 'Stop';
@@ -345,8 +346,9 @@ $controls_start_button.onclick = () => {
       }
       timer_interval = setInterval(() => {
         seconds_since_start++;
-        $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${seconds_since_start % 60}`;
-      });
+        const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
+        $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+      }, 1000);
     });
   } else {
     $controls_start_button.innerHTML = 'Start';
@@ -357,17 +359,6 @@ $controls_start_button.onclick = () => {
     seconds_since_start = 0;
   }
 }
-
-// router.post('/add-time-record', isLoggedIn, function (req, res) {
-//   let { minutes, picture_id } = req.body;
-//   conn.execute("CALL add_time_record(?, ?, ?)", [minutes, req.id, picture_id], function(err, result) {
-//     if (err) {
-//       res.send({ error: 'Could not add time record.' });
-//     } else {
-//       res.send({ message: 'OK' });
-//     }
-//   });
-// });
 
 $controls_done_button.addEventListener('click', () => {
   const { id, filename, extension } = shuffled[iteration];
@@ -382,7 +373,7 @@ $controls_done_button.addEventListener('click', () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      minutes: seconds_since_start,
+      minutes: seconds_since_start / 60,
       picture_id: id
     })
   })
@@ -390,10 +381,12 @@ $controls_done_button.addEventListener('click', () => {
   .then(json => console.log(json));
   clearInterval(timer_interval);
   seconds_since_start = 0;
-  time_interval = setInterval(() => {
+  $left_time.innerHTML = '0:00';
+  timer_interval = setInterval(() => {
     seconds_since_start++;
-    $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${seconds_since_start % 60}`;
-  });
+    const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
+    $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+  }, 1000);
 });
 
 // keydown events
