@@ -54,14 +54,12 @@ $controls_done_button.addEventListener('click', () => {
   .then(res => res.json())
   .then(json => {
     console.log(json);
+    waiting_for_chart_to_close = true;
     display_chart();
-    reset_timer();
-    start_timer();
     iteration += 1;
     if (iteration >= shuffled.length) {
       iteration = 0;
     }
-    waiting_for_chart_to_close = true;
   });
 });
 

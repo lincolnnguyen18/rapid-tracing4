@@ -4,11 +4,15 @@ window.close_chart_dialog = () => {
   $chart_dialog.classList.add('hidden');
   $container.classList.remove('blurred');
   $chart_dialog_window_placeholder_text.classList.remove('hidden');
-  waiting_for_chart_to_close = false;
   $chart_dialog_window_placeholder_text.innerHTML = 'Loading...';
+  if (waiting_for_chart_to_close)
+    start_timer();
+  waiting_for_chart_to_close = false;
 }
 
 window.display_chart = () => {
+  if (waiting_for_chart_to_close)
+    reset_timer();
   const current_picture_id = shuffled[iteration].id;
   if (!current_picture_id) {
     return;
@@ -44,8 +48,6 @@ $chart_button.addEventListener('click', () => {
 });
 $chart_dialog_continue_button.addEventListener('click', () => {
   close_chart_dialog();
-  reset_timer();
-  start_timer();
 });
 $chart_dialog_window.addEventListener('click', (e) => {
   e.stopPropagation();
