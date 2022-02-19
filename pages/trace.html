@@ -58,7 +58,7 @@
             <span id="upload-dialog-header-modes-details-button">Details</span>
           </div>
           <div id="upload-dialog-header-sliders">
-            <div class="row-1">
+            <div class="row-1 hidden">
               <div>Kernel size: </div>
               <input id="kernel-size-slider" type="range" min="1" max="100" value="50">
             </div>
@@ -78,7 +78,8 @@
         </label>
         <div class="dialog-bottom">
           <div class="left">
-            <span class="message hidden">Invalid file type.</span>
+            <!-- <span class="message hidden">Invalid file type.</span> -->
+            <span class="material-icons-round invert">invert_colors</span>
           </div>
           <div class="buttons">
             <span id="upload-dialog-cancel-button">Cancel</span>
@@ -112,8 +113,8 @@
         <span class="material-icons-round" id="logout-button">logout</span>
       </div>
     </div>
-    <!-- <script type="module" src="/modules/js.cookie.min.mjs"></script> -->
     <script src="/modules/lodash.min.js"></script>
+    <script type="module" src="/scripts/trace_global.js"></script>
     <script type="module" src="/scripts/trace.js"></script>
   </body>
 </html>

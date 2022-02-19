@@ -1,17 +1,7 @@
-import Cookies from '/modules/js.cookie.min.mjs';
-
-const body = document.querySelectorAll('body')[0];
-const user_id = Cookies.get('id');
 let current_file = null;
 let preview_json = null;
 
 // upload dialog window
-const $upload_dialog = document.querySelectorAll('#upload-dialog')[0];
-const $upload_dialog_window = document.querySelectorAll('#upload-dialog-window')[0];
-const $upload_button = document.querySelectorAll('#upload-button')[0];
-const $upload_dialog_cancel_button = document.querySelectorAll('#upload-dialog-cancel-button')[0];
-const $upload_dialog_upload_button = document.querySelectorAll('#upload-dialog-upload-button')[0];
-const $container = document.querySelectorAll('#container')[0];
 let upload_dialog_open = false;
 const open_upload_dialog = () => {
   $upload_dialog.classList.remove('hidden');
@@ -52,12 +42,6 @@ $upload_dialog_upload_button.addEventListener('click', () => {
 });
 
 // upload dialog dropbox
-const $upload_dialog_window_image = document.querySelectorAll('#upload-dialog-window-image')[0];
-const $upload_dialog_input = document.querySelectorAll('#upload-dialog-input')[0];
-const $upload_dialog_placeholder = document.querySelectorAll('#upload-dialog-placeholder')[0];
-const $upload_dialog_window_header = document.querySelectorAll('#upload-dialog-window .dialog-header')[0];
-const $upload_dialog_placeholder_text = document.querySelectorAll('#upload-dialog-placeholder .placeholder-text')[0];
-const $upload_dialog_message = document.querySelectorAll('#upload-dialog-window .dialog-bottom .message')[0];
 const file_added = () => {
   $upload_dialog_placeholder.classList.add('hidden');
   $upload_dialog_window_image.classList.remove('hidden');
@@ -98,18 +82,17 @@ const get_preview = async (file, size, sigma) => {
           break;
       }
     } else {
-      $upload_dialog_message.innerText = json.error;
-      $upload_dialog_message.classList.remove('hidden');
+      // $upload_dialog_message.innerText = json.error;
+      // $upload_dialog_message.classList.remove('hidden');
       $upload_dialog_placeholder.classList.remove('green');
       $upload_dialog_placeholder_text.innerText = 'Drag and drop a picture here.\nOr click here to select a picture to upload.';
-      setTimeout(() => {
-        $upload_dialog_message.classList.add('hidden');
-      }, 3000);
+      // setTimeout(() => {
+      //   $upload_dialog_message.classList.add('hidden');
+      // }, 3000);
     }
   });
 }
-const $kernel_size_slider = document.querySelectorAll('#kernel-size-slider')[0];
-const $kernel_sigma_slider = document.querySelectorAll('#kernel-sigma-slider')[0];
+
 let seconds_since_size_change = 0;
 let seconds_since_sigma_change = 0;
 let last_size_interval = null;
@@ -148,11 +131,11 @@ $kernel_sigma_slider.addEventListener('input', (e) => {
 });
 function handleFile(file) {
   if (!file || !file.type || !file.type.match('image.*')) {
-    $upload_dialog_message.innerText = 'Invalid image file type';
-    $upload_dialog_message.classList.remove('hidden');
-    setTimeout(() => {
-      $upload_dialog_message.classList.add('hidden');
-    }, 3000);
+    // $upload_dialog_message.innerText = 'Invalid image file type';
+    // $upload_dialog_message.classList.remove('hidden');
+    // setTimeout(() => {
+    //   $upload_dialog_message.classList.add('hidden');
+    // }, 3000);
     $upload_dialog_placeholder.classList.remove('green');
     return;
   }
@@ -172,9 +155,9 @@ function handleFile(file) {
       const max_dimension = 2000;
       const max_kernel = Math.min(Math.max(image.width, image.height), max_dimension);
       $kernel_size_slider.max = max_kernel;
-      $kernel_sigma_slider.max = max_kernel;
-      $kernel_size_slider.value = $kernel_size_slider.max * 0.05;
-      $kernel_sigma_slider.value = $kernel_sigma_slider.max * 1;
+      $kernel_sigma_slider.max = 20;
+      $kernel_size_slider.value = $kernel_size_slider.max * 1;
+      $kernel_sigma_slider.value = 4;
       get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value).then(() => {
         $upload_dialog_window_image.onload = () => {
           $upload_dialog_window_header.classList.remove('disabled');
@@ -217,16 +200,12 @@ $upload_dialog_input.addEventListener('change', (e) => {
   const file = e.target.files[0];
   handleFile(file);
 });
-const $dropbox = document.querySelectorAll('#upload-dialog-window .dialog-top')[0];
-$dropbox.addEventListener('dragenter', dragenter, false);
-$dropbox.addEventListener('dragover', dragover, false);
-$dropbox.addEventListener('drop', drop, false);
-$dropbox.addEventListener('dragleave', dragleave, false);
+$upload_dialog_dropbox.addEventListener('dragenter', dragenter, false);
+$upload_dialog_dropbox.addEventListener('dragover', dragover, false);
+$upload_dialog_dropbox.addEventListener('drop', drop, false);
+$upload_dialog_dropbox.addEventListener('dragleave', dragleave, false);
 
 // upload dialog mode buttons
-const $upload_dialog_header_modes_original_button = document.querySelectorAll('#upload-dialog-header-modes-original-button')[0];
-const $upload_dialog_header_modes_outline_button = document.querySelectorAll('#upload-dialog-header-modes-outline-button')[0];
-const $upload_dialog_header_modes_details_button = document.querySelectorAll('#upload-dialog-header-modes-details-button')[0];
 let selected_button = $upload_dialog_header_modes_outline_button;
 $upload_dialog_header_modes_original_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
@@ -260,13 +239,6 @@ $upload_dialog_header_modes_details_button.addEventListener('click', () => {
 });
 
 // library dialog
-const $library_dialog = document.querySelectorAll('#library-dialog')[0];
-const $library_dialog_window = document.querySelectorAll('#library-dialog-window')[0];
-const $pictures_button = document.querySelectorAll('#pictures-button')[0];
-const $library_dialog_window_close_button = document.querySelectorAll('#library-dialog-window > div.buttons > span.close-button')[0];
-const $library_dialog_window_placeholder = document.querySelectorAll('#library-dialog-window > div.placeholder')[0];
-const $library_dialog_window_images = document.querySelectorAll('#library-dialog-window > div.images')[0];
-
 $library_dialog.addEventListener('click', (e) => {
   close_library_dialog();
 });
@@ -338,11 +310,6 @@ $library_dialog_window_close_button.addEventListener('click', () => {
 });
 
 // start stop controls
-const $controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
-const $controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];
-const $top_region = document.querySelectorAll('#top')[0];
-const $left_time = document.querySelectorAll('#left-time')[0];
-const $modes_region = document.querySelectorAll('#modes')[0];
 let controls_started = false;
 let shuffled = null;
 let iteration = 0;
@@ -414,13 +381,6 @@ $controls_done_button.addEventListener('click', () => {
   });
 });
 
-const $chart_button = document.querySelectorAll('#chart-button')[0];
-const $chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
-const $chart_dialog_window = document.querySelectorAll('#timerecord-chart-dialog-window')[0];
-const $chart_dialog_window_img = document.querySelectorAll('#timerecord-chart-dialog-window .top')[0];
-const $chart_dialog_window_placeholder_text = document.querySelectorAll('#timerecord-chart-dialog-window .placeholder-text')[0];
-const $chart_dialog_continue_button = document.querySelectorAll('#timerecord-chart-dialog-continue-button')[0];
-const $timerecord_chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
 let waiting_for_chart_to_close = false;
 
 const close_chart_dialog = () => {
