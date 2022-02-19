@@ -142,8 +142,8 @@ router.get('/get-pictures', isLoggedIn, function (req, res) {
 
 // time record stuff
 router.post('/add-time-record', isLoggedIn, function (req, res) {
-  let { minutes, picture_id } = req.body;
-  conn.execute("CALL add_time_record(?, ?, ?)", [minutes, req.id, picture_id], function(err, result) {
+  let { seconds, picture_id } = req.body;
+  conn.execute("CALL add_time_record(?, ?, ?)", [seconds, req.id, picture_id], function(err, result) {
     if (err) {
       res.send({ error: 'Could not add time record.' });
     } else {

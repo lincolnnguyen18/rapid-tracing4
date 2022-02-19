@@ -74,6 +74,7 @@ const file_cleared = () => {
 const get_preview = async (file, size, sigma) => {
   const formData = new FormData();
   formData.append('picture', file);
+  console.log('test');
   fetch('/api/get-picture-preview?size=' + size + '&sigma=' + sigma, {
     method: 'POST',
     body: formData
@@ -146,7 +147,7 @@ $kernel_sigma_slider.addEventListener('input', (e) => {
   last_sigma_interval = interval;
 });
 function handleFile(file) {
-  if (!file.type.match('image.*')) {
+  if (!file || !file.type || !file.type.match('image.*')) {
     $upload_dialog_message.innerText = 'Invalid image file type';
     $upload_dialog_message.classList.remove('hidden');
     setTimeout(() => {
@@ -231,19 +232,31 @@ $upload_dialog_header_modes_original_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_original_button;
   selected_button.classList.add('selected-mode');
+  $upload_dialog_window_image.classList.add('getting-preview');
   $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/original.${preview_json.extension}`;
+  $upload_dialog_window_image.onload = () => {
+    $upload_dialog_window_image.classList.remove('getting-preview');
+  }
 });
 $upload_dialog_header_modes_outline_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_outline_button;
   selected_button.classList.add('selected-mode');
+  $upload_dialog_window_image.classList.add('getting-preview');
   $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/outline.${preview_json.extension}`;
+  $upload_dialog_window_image.onload = () => {
+    $upload_dialog_window_image.classList.remove('getting-preview');
+  }
 });
 $upload_dialog_header_modes_details_button.addEventListener('click', () => {
   selected_button.classList.remove('selected-mode');
   selected_button = $upload_dialog_header_modes_details_button;
   selected_button.classList.add('selected-mode');
+  $upload_dialog_window_image.classList.add('getting-preview');
   $upload_dialog_window_image.src = `/shared/${user_id}/temp/${preview_json.filename}/details.${preview_json.extension}`;
+  $upload_dialog_window_image.onload = () => {
+    $upload_dialog_window_image.classList.remove('getting-preview');
+  }
 });
 
 // library dialog
@@ -371,6 +384,22 @@ $controls_start_button.onclick = () => {
   }
 }
 
+// router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
+//   let { picture_id } = req.body;
+//   fetch('http://localhost:3001/get-picture-timerecords-chart', {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({ user_id: req.id, picture_id: picture_id })
+//   })
+//   .then(res => res.json())
+//   .then(data => {
+//     console.log(data);
+//     res.send(data);
+//   })
+// });
+
 $controls_done_button.addEventListener('click', () => {
   const { id, filename, extension } = shuffled[iteration];
   console.log(id, filename, extension, iteration);
@@ -384,12 +413,23 @@ $controls_done_button.addEventListener('click', () => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      minutes: seconds_since_start / 60,
+      seconds: seconds_since_start,
       picture_id: id
     })
   })
   .then(res => res.json())
-  .then(json => console.log(json));
+  .then(json => {
+    console.log(json);
+    fetch('/api/get-picture-timerecords-chart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ picture_id: id })
+    })
+    .then(res => res.json())
+    .then(data => console.log(data));
+  });
   clearInterval(timer_interval);
   seconds_since_start = 0;
   $left_time.innerHTML = '0:00';

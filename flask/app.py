@@ -8,10 +8,12 @@ import zipfile
 import mysql.connector
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.ticker as ticker
 import datetime as dt
 import random
 import string
 import os
+import time
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -46,7 +48,7 @@ def resize(image, max_dim):
 
 def get_temp_name(user_id):
   # get list of files in ../shared/{user_id}/temp
-  temp_dir = '../shared/' + user_id + '/temp'
+  temp_dir = f"../shared/{user_id}/temp"
   temp_files = os.listdir(temp_dir)
   temp_name = ''.join(random.choice(string.digits + string.ascii_letters) for _ in range(10))
   while temp_name in temp_files:
@@ -62,10 +64,11 @@ def get_picture_preview():
   print(f"user_id: {user_id}")
   size = request.args.get('size', type=int)
   sigma = request.args.get('sigma', type=int)
-  image = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}")
+  original = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}")
+  image = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}", 0)
   image = resize(image, 2000)
   thumbnail = resize(image, 1000)
-  cv2.imwrite(f"../shared/{user_id}/temp/{filename}/original.{extension}", image)
+  cv2.imwrite(f"../shared/{user_id}/temp/{filename}/original.{extension}", original)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)
   outline = cv2.subtract(blurred_image, image)
@@ -89,6 +92,8 @@ def get_picture_timerecords_chart():
   plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
   date_interval = max(1, int(N/10))
   plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=date_interval))
+  formatter = ticker.FuncFormatter(lambda ms, y: time.strftime('%M:%S', time.gmtime(ms)))
+  plt.gca().yaxis.set_major_formatter(formatter)
   plt.plot(x, y)
   plt.gcf().autofmt_xdate()
   temp_name = get_temp_name(user_id)

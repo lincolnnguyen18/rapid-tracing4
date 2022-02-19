@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS pictures (
 
 CREATE TABLE IF NOT EXISTS time_records (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
-  minutes REAL NOT NULL,
+  seconds INT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -51,10 +51,10 @@ CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
   SELECT pictures.id, filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id ORDER BY pictures.id DESC;
 END//
 
-CREATE PROCEDURE add_time_record(_minutes REAL, _user_id INTEGER, _picture_id INTEGER) BEGIN
+CREATE PROCEDURE add_time_record(_seconds INT, _user_id INTEGER, _picture_id INTEGER) BEGIN
   SET @picture_belong_to_user = (SELECT COUNT(*) FROM user_pictures WHERE user_id = _user_id AND picture_id = _picture_id);
   IF @picture_belong_to_user = 1 THEN
-    INSERT INTO time_records (minutes) VALUES (_minutes);
+    INSERT INTO time_records (seconds) VALUES (_seconds);
     INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());
   ELSE
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Picture does not belong to user';
@@ -62,7 +62,7 @@ CREATE PROCEDURE add_time_record(_minutes REAL, _user_id INTEGER, _picture_id IN
 END//
 
 CREATE PROCEDURE get_user_picture_time_records(_user_id INTEGER, _picture_id INTEGER) BEGIN
-  SELECT time_records.id, minutes, time_records.created_at FROM time_records
+  SELECT time_records.id, seconds, time_records.created_at FROM time_records
   JOIN picture_timerecords ON time_records.id = picture_timerecords.timerecord_id 
   JOIN user_pictures ON picture_timerecords.picture_id = user_pictures.picture_id
   WHERE user_pictures.user_id = _user_id AND user_pictures.picture_id = _picture_id AND picture_timerecords.picture_id = _picture_id
