@@ -15,13 +15,7 @@ import random
 import string
 import os
 import time
-
-# mydb = mysql.connector.connect(
-#   host="localhost",
-#   user="admin",
-#   password="pass123",
-#   database="rapid_tracing"
-# )
+import datetime
 
 app = Flask(__name__)
 app.config["MYSQL_USER"] = "admin"
@@ -92,14 +86,19 @@ def get_picture_timerecords_chart():
   print(user_id, picture_id)
   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
   result = cursor.fetchall()
+  for row in result:
+    print(row)
   N = len(result)
-  x = [record[2] for record in result]
+  x = []
+  for record in result:
+    _datetime = record[2] + datetime.timedelta(hours=1)
+    x.append(_datetime.strftime("%Y-%m-%d %H:%M:%S"))
   y = [record[1] for record in result]
-  plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=1))
+  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=N//5))
   formatter = ticker.FuncFormatter(lambda s, y: time.strftime('%M:%S', time.gmtime(s)))
   plt.gca().yaxis.set_major_formatter(formatter)
-  plt.plot(x, y)
+  plt.gca().yaxis.grid(True)
+  plt.bar(x, y, align='center')
   plt.gcf().autofmt_xdate()
   temp_name = get_temp_name(user_id)
   plt.savefig(f"../shared/{user_id}/temp/{temp_name}.png")

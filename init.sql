@@ -66,7 +66,7 @@ CREATE PROCEDURE get_user_picture_time_records(_user_id INTEGER, _picture_id INT
   JOIN picture_timerecords ON time_records.id = picture_timerecords.timerecord_id 
   JOIN user_pictures ON picture_timerecords.picture_id = user_pictures.picture_id
   WHERE user_pictures.user_id = _user_id AND user_pictures.picture_id = _picture_id AND picture_timerecords.picture_id = _picture_id
-  ORDER BY time_records.id DESC;
+  ORDER BY time_records.id ASC;
 END//
 
 DELIMITER ;
