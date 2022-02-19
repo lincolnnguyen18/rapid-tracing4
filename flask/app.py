@@ -94,7 +94,7 @@ def get_picture_timerecords_chart():
     _datetime = record[2] + datetime.timedelta(hours=1)
     x.append(_datetime.strftime("%Y-%m-%d %H:%M:%S"))
   y = [record[1] for record in result]
-  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=N//5))
+  plt.gca().xaxis.set_major_locator(mdates.DayLocator(interval=max(1, N//5)))
   formatter = ticker.FuncFormatter(lambda s, y: time.strftime('%M:%S', time.gmtime(s)))
   plt.gca().yaxis.set_major_formatter(formatter)
   plt.gca().yaxis.grid(True)
