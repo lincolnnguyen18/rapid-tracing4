@@ -430,14 +430,14 @@ $controls_done_button.addEventListener('click', () => {
     .then(res => res.json())
     .then(data => console.log(data));
   });
-  clearInterval(timer_interval);
-  seconds_since_start = 0;
-  $left_time.innerHTML = '0:00';
-  timer_interval = setInterval(() => {
-    seconds_since_start++;
-    const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
-    $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
-  }, 1000);
+  // clearInterval(timer_interval);
+  // seconds_since_start = 0;
+  // $left_time.innerHTML = '0:00';
+  // timer_interval = setInterval(() => {
+  //   seconds_since_start++;
+  //   const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
+  //   $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+  // }, 1000);
 });
 
 // keydown events

@@ -2,6 +2,7 @@
 
 from flask import Flask, request
 from flask import jsonify
+from flask_mysqldb import MySQL
 import cv2
 import numpy as np
 import zipfile
@@ -15,14 +16,18 @@ import string
 import os
 import time
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="admin",
-  password="pass123",
-  database="rapid_tracing"
-)
+# mydb = mysql.connector.connect(
+#   host="localhost",
+#   user="admin",
+#   password="pass123",
+#   database="rapid_tracing"
+# )
 
 app = Flask(__name__)
+app.config["MYSQL_USER"] = "admin"
+app.config["MYSQL_PASSWORD"] = "pass123"
+app.config["MYSQL_DB"] = "rapid_tracing"
+mysql = MySQL(app)
 
 # ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'};
 
@@ -67,7 +72,7 @@ def get_picture_preview():
   original = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}")
   image = cv2.imread(f"../shared/{user_id}/temp/{filename}/original.{extension}", 0)
   image = resize(image, 2000)
-  thumbnail = resize(image, 1000)
+  thumbnail = resize(original, 1000)
   cv2.imwrite(f"../shared/{user_id}/temp/{filename}/original.{extension}", original)
   kernel = genGaussianKernel(size, sigma)
   blurred_image = cv2.filter2D(image, -1, kernel)
@@ -83,7 +88,7 @@ def get_picture_timerecords_chart():
   body = request.get_json()
   user_id = body['user_id']
   picture_id = body['picture_id']
-  cursor = mydb.cursor()
+  cursor = mysql.connection.cursor()
   cursor.execute("call get_user_picture_time_records(%s, %s)", (user_id, picture_id))
   result = cursor.fetchall()
   N = len(result)

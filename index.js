@@ -182,6 +182,20 @@ router.post('/get-picture-timerecords-chart', isLoggedIn, function (req, res) {
   })
   .then(res => res.json())
   .then(data => {
+    const { temp_name } = data;
+    if (!temp_files_seconds_since_last_access[req.id])
+      temp_files_seconds_since_last_access[req.id] = {};
+    temp_files_seconds_since_last_access[req.id][temp_name] = 0;
+    let interval = setInterval(() => {
+      if (temp_files_seconds_since_last_access[req.id][temp_name] >= 30) {
+        fs.unlinkSync(`./shared/${req.id}/temp/${temp_name}.png`);
+        clearInterval(interval);
+        delete temp_files_seconds_since_last_access[req.id][temp_name];
+      } else {
+        temp_files_seconds_since_last_access[req.id][temp_name]++;
+        console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
+      }
+    }, 1000);
     console.log(data);
     res.send(data);
   })
@@ -224,9 +238,8 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
           .then(res => res.json())
           .then(json => {
             console.log(json);
-            if (!temp_files_seconds_since_last_access[req.id]) {
+            if (!temp_files_seconds_since_last_access[req.id])
               temp_files_seconds_since_last_access[req.id] = {};
-            }
             temp_files_seconds_since_last_access[req.id][temp_name] = 0;
             let interval = setInterval(() => {
               if (temp_files_seconds_since_last_access[req.id][temp_name] >= 60) {
@@ -238,6 +251,7 @@ router.post('/get-picture-preview', isLoggedIn, (req, res) => {
                   });
                 }
                 clearInterval(interval);
+                delete temp_files_seconds_since_last_access[req.id][temp_name];
               } else {
                 temp_files_seconds_since_last_access[req.id][temp_name]++;
                 console.log(`${req.id}, ${temp_name}: ${temp_files_seconds_since_last_access[req.id][temp_name]}`);
@@ -267,6 +281,21 @@ app.get("/shared/:id/temp/:filename/:type", isLoggedIn, (req, res) => {
   if (req.params.id == req.id) {
     temp_files_seconds_since_last_access[req.id][req.params.filename] = 0;
     let path = __dirname + `/shared/${req.params.id}/temp/${req.params.filename}/${req.params.type}`;
+    if (fs.existsSync(path)) {
+      res.sendFile(path);
+    } else {
+      res.sendFile(__dirname + '/pages/404.html');
+    }
+  } else {
+    res.sendFile(__dirname + '/pages/404.html');
+  }
+});
+app.get("/shared/:id/temp/:tempfile", isLoggedIn, (req, res) => {
+  console.log(`User with id ${req.id} is trying to access file named '${req.params.tempfile}' directory with id ${req.params.id}`);
+  if (req.params.id == req.id) {
+    let without_extension = req.params.tempfile.substring(0, req.params.tempfile.lastIndexOf('.'));
+    temp_files_seconds_since_last_access[req.id][without_extension] = 0;
+    let path = __dirname + `/shared/${req.params.id}/temp/${req.params.tempfile}`;
     if (fs.existsSync(path)) {
       res.sendFile(path);
     } else {
