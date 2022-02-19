@@ -390,10 +390,6 @@ $controls_start_button.onclick = () => {
 $controls_done_button.addEventListener('click', () => {
   const { id, filename, extension } = shuffled[iteration];
   console.log(id, filename, extension, iteration);
-  iteration += 1;
-  if (iteration >= shuffled.length) {
-    iteration = 0;
-  }
   fetch(`/api/add-time-record`, {
     method: 'POST',
     headers: {
@@ -407,24 +403,15 @@ $controls_done_button.addEventListener('click', () => {
   .then(res => res.json())
   .then(json => {
     console.log(json);
-    // fetch('/api/get-picture-timerecords-chart', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json'
-    //   },
-    //   body: JSON.stringify({ picture_id: id })
-    // })
-    // .then(res => res.json())
-    // .then(data => console.log(data));
+    display_chart();
+    reset_timer();
+    start_timer();
+    iteration += 1;
+    if (iteration >= shuffled.length) {
+      iteration = 0;
+    }
+    waiting_for_chart_to_close = true;
   });
-  // clearInterval(timer_interval);
-  // seconds_since_start = 0;
-  // $left_time.innerHTML = '0:00';
-  // timer_interval = setInterval(() => {
-  //   seconds_since_start++;
-  //   const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
-  //   $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
-  // }, 1000);
 });
 
 const $chart_button = document.querySelectorAll('#chart-button')[0];
@@ -434,6 +421,7 @@ const $chart_dialog_window_img = document.querySelectorAll('#timerecord-chart-di
 const $chart_dialog_window_placeholder_text = document.querySelectorAll('#timerecord-chart-dialog-window .placeholder-text')[0];
 const $chart_dialog_continue_button = document.querySelectorAll('#timerecord-chart-dialog-continue-button')[0];
 const $timerecord_chart_dialog = document.querySelectorAll('#timerecord-chart-dialog')[0];
+let waiting_for_chart_to_close = false;
 
 const close_chart_dialog = () => {
   $chart_dialog_window_img.classList.add('hidden');
@@ -441,9 +429,24 @@ const close_chart_dialog = () => {
   $chart_dialog.classList.add('hidden');
   $container.classList.remove('blurred');
   $chart_dialog_window_placeholder_text.classList.remove('hidden');
+  waiting_for_chart_to_close = false;
 }
 
-$chart_button.addEventListener('click', () => {
+const reset_timer = () => {
+  clearInterval(timer_interval);
+  seconds_since_start = 0;
+  $left_time.innerHTML = '0:00';
+}
+
+const start_timer = () => {
+  timer_interval = setInterval(() => {
+    seconds_since_start++;
+    const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
+    $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+  }, 1000);
+}
+
+const display_chart = (on_done) => {
   const current_picture_id = shuffled[iteration].id;
   if (!current_picture_id) {
     return;
@@ -468,9 +471,15 @@ $chart_button.addEventListener('click', () => {
       $chart_dialog_window_img.classList.remove('hidden');
     }
   });
+}
+
+$chart_button.addEventListener('click', () => {
+  display_chart();
 });
 $chart_dialog_continue_button.addEventListener('click', () => {
   close_chart_dialog();
+  reset_timer();
+  start_timer();
 });
 $chart_dialog_window.addEventListener('click', (e) => {
   e.stopPropagation();
@@ -485,6 +494,10 @@ document.addEventListener('keydown', (e) => {
     close_upload_dialog();
     close_library_dialog();
     close_chart_dialog();
+    if (waiting_for_chart_to_close) {
+      reset_timer();
+      start_timer();
+    }
   }
 });
 window.addEventListener('paste', e => {
