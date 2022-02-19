@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS pictures (
   id INTEGER PRIMARY KEY AUTO_INCREMENT,
   filename TEXT NOT NULL,
   extension TEXT NOT NULL,
+  seconds INT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -48,11 +49,12 @@ CREATE PROCEDURE add_picture(_filename TEXT, _extension TEXT, _user_id INTEGER) 
 END//
 
 CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
-  SELECT pictures.id, filename, extension FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id ORDER BY pictures.id DESC;
+  SELECT pictures.id, filename, extension, pictures.seconds FROM pictures JOIN user_pictures ON pictures.id = user_pictures.picture_id WHERE user_pictures.user_id = _user_id ORDER BY pictures.id DESC;
 END//
 
 CREATE PROCEDURE add_time_record(_seconds INT, _user_id INTEGER, _picture_id INTEGER) BEGIN
   SET @picture_belong_to_user = (SELECT COUNT(*) FROM user_pictures WHERE user_id = _user_id AND picture_id = _picture_id);
+  UPDATE pictures SET seconds = _seconds WHERE id = _picture_id;
   IF @picture_belong_to_user = 1 THEN
     INSERT INTO time_records (seconds) VALUES (_seconds);
     INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());

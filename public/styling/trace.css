@@ -233,7 +233,7 @@ html, body {
   appearance: none;
   -webkit-appearance: none;
   height: 7px;
-  background: #888888;
+  background: #88889C;
   border-radius: 7px;
 }
 
@@ -254,9 +254,9 @@ html, body {
   height: 300px;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #888888;
+  border: 2px dashed #88889C;
   border-radius: 7px;
-  color: #888888;
+  color: #88889C;
 }
 
 #upload-dialog-placeholder .placeholder-text {
@@ -266,7 +266,7 @@ html, body {
 #upload-dialog-window-image {
   max-height: 60vh;
   max-width: 80vw;
-  border: 2px dashed #888888;
+  border: 2px dashed #88889C;
   padding: 5px;
   border-radius: 7px;
 }
