@@ -317,10 +317,13 @@ $library_dialog_window_close_button.addEventListener('click', () => {
 const $controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
 const $controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];
 const $top_region = document.querySelectorAll('#top')[0];
+const $left_time = document.querySelectorAll('#left-time')[0];
 const $modes_region = document.querySelectorAll('#modes')[0];
 let controls_started = false;
 let shuffled = null;
 let iteration = 0;
+let seconds_since_start = 0;
+let timer_interval = null;
 
 $controls_start_button.onclick = () => {
   controls_started = !controls_started;
@@ -340,14 +343,31 @@ $controls_start_button.onclick = () => {
         //   console.log(id, filename, extension);
         // });
       }
+      timer_interval = setInterval(() => {
+        seconds_since_start++;
+        $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${seconds_since_start % 60}`;
+      });
     });
   } else {
     $controls_start_button.innerHTML = 'Start';
     $controls_done_button.classList.add('disabled');
     $top_region.classList.add('invisible');
     $modes_region.classList.add('invisible');
+    clearInterval(timer_interval);
+    seconds_since_start = 0;
   }
 }
+
+// router.post('/add-time-record', isLoggedIn, function (req, res) {
+//   let { minutes, picture_id } = req.body;
+//   conn.execute("CALL add_time_record(?, ?, ?)", [minutes, req.id, picture_id], function(err, result) {
+//     if (err) {
+//       res.send({ error: 'Could not add time record.' });
+//     } else {
+//       res.send({ message: 'OK' });
+//     }
+//   });
+// });
 
 $controls_done_button.addEventListener('click', () => {
   const { id, filename, extension } = shuffled[iteration];
@@ -356,6 +376,24 @@ $controls_done_button.addEventListener('click', () => {
   if (iteration >= shuffled.length) {
     iteration = 0;
   }
+  fetch(`/api/add-time-record`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      minutes: seconds_since_start,
+      picture_id: id
+    })
+  })
+  .then(res => res.json())
+  .then(json => console.log(json));
+  clearInterval(timer_interval);
+  seconds_since_start = 0;
+  time_interval = setInterval(() => {
+    seconds_since_start++;
+    $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${seconds_since_start % 60}`;
+  });
 });
 
 // keydown events

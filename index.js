@@ -140,11 +140,6 @@ router.get('/get-pictures', isLoggedIn, function (req, res) {
   });
 });
 
-// CREATE PROCEDURE add_time_record(_minutes REAL, _user_id INTEGER, _picture_id INTEGER) BEGIN
-//   INSERT INTO time_records (minutes) VALUES (_minutes);
-//   INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());
-// END//
-
 // time record stuff
 router.post('/add-time-record', isLoggedIn, function (req, res) {
   let { minutes, picture_id } = req.body;

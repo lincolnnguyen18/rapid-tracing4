@@ -52,8 +52,13 @@ CREATE PROCEDURE get_user_pictures(_user_id INTEGER) BEGIN
 END//
 
 CREATE PROCEDURE add_time_record(_minutes REAL, _user_id INTEGER, _picture_id INTEGER) BEGIN
-  INSERT INTO time_records (minutes) VALUES (_minutes);
-  INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());
+  SET @picture_belong_to_user = (SELECT COUNT(*) FROM user_pictures WHERE user_id = _user_id AND picture_id = _picture_id);
+  IF @picture_belong_to_user = 1 THEN
+    INSERT INTO time_records (minutes) VALUES (_minutes);
+    INSERT INTO picture_timerecords (picture_id, timerecord_id) VALUES (_picture_id, LAST_INSERT_ID());
+  ELSE
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Picture does not belong to user';
+  END IF;
 END//
 
 CREATE PROCEDURE get_user_picture_time_records(_user_id INTEGER, _picture_id INTEGER) BEGIN
