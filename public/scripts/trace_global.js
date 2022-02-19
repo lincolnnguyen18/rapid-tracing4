@@ -34,7 +34,9 @@ window.$chart_dialog_continue_button = document.querySelectorAll('#timerecord-ch
 
 window.$top_region = document.querySelectorAll('#top')[0];
 window.$left_time = document.querySelectorAll('#left-time')[0];
+window.$right_time = document.querySelectorAll('#right-time')[0];
 window.$modes_region = document.querySelectorAll('#modes')[0];
+window.$progress = document.querySelectorAll('#progress')[0];
 
 window.$controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
 window.$controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];

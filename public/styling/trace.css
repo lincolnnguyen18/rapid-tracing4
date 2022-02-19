@@ -29,12 +29,11 @@ html, body {
 #progress::-webkit-progress-bar {
   background-color: white;
   border-radius: 10px;
+  overflow: hidden;
 }
 
 #progress::-webkit-progress-value {
   background-color: #888888;
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
 }
 
 #modes {

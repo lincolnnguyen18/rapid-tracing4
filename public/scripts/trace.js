@@ -5,6 +5,11 @@ window.seconds_since_start = 0;
 window.timer_interval = null;
 window.waiting_for_chart_to_close = false;
 
+const get_time_string_from_seconds = (seconds) => {
+  const padded_seconds = seconds % 60 < 10 ? '0' + seconds % 60 : seconds % 60;
+  return Math.floor(seconds / 60) + ':' + padded_seconds;
+}
+  
 $controls_start_button.onclick = () => {
   controls_started = !controls_started;
   $left_time.innerHTML = '0:00';
@@ -21,11 +26,17 @@ $controls_start_button.onclick = () => {
         iteration = 0;
         $chart_button.classList.remove('disabled');
         console.log(shuffled);
+        if (shuffled[0].seconds) {
+          $right_time.classList.remove('invisible');
+          $right_time.innerHTML = get_time_string_from_seconds(shuffled[0].seconds);
+        }
       }
       timer_interval = setInterval(() => {
         seconds_since_start++;
-        const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
-        $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+        $left_time.innerHTML = get_time_string_from_seconds(seconds_since_start);
+        if (shuffled[0].seconds) {
+          $progress.value = seconds_since_start / shuffled[0].seconds;
+        }
       }, 1000);
     });
   } else {
