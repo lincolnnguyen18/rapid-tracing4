@@ -8,9 +8,11 @@ window.close_chart_dialog = () => {
   if (waiting_for_chart_to_close)
     start_timer();
   waiting_for_chart_to_close = false;
+  paused = false;
 }
 
 window.display_chart = () => {
+  paused = true;
   if (waiting_for_chart_to_close)
     reset_timer();
   const current_picture_id = shuffled[iteration].id;

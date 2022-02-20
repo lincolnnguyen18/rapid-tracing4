@@ -6,6 +6,7 @@ window.open_upload_dialog = () => {
   $upload_dialog.classList.remove('hidden');
   $container.classList.add('blurred');
   upload_dialog_open = true;
+  paused = true;
 };
 window.close_upload_dialog = () => {
   $upload_dialog.classList.add('hidden');
@@ -16,6 +17,7 @@ window.close_upload_dialog = () => {
   $upload_dialog_window_image.file = null;
   $upload_dialog_window_image.src = '';
   file_cleared();
+  paused = false;
 };
 
 $upload_dialog.addEventListener('click', (e) => {
@@ -157,7 +159,7 @@ function handleFile(file) {
       const max_dimension = 2000;
       const max_kernel = Math.min(Math.max(image.width, image.height), max_dimension);
       $kernel_size_slider.max = max_kernel;
-      $kernel_sigma_slider.max = 20;
+      $kernel_sigma_slider.max = 50;
       $kernel_size_slider.value = $kernel_size_slider.max * 1;
       $kernel_sigma_slider.value = 4;
       get_preview(file, $kernel_size_slider.value, $kernel_sigma_slider.value).then(() => {

@@ -8,11 +8,13 @@ $library_dialog_window.addEventListener('click', (e) => {
 });
 
 window.open_library_dialog = () => {
+  paused = true;
   $library_dialog.classList.remove('hidden');
   $container.classList.add('blurred');
 }
 
 window.close_library_dialog = () => {
+  paused = false;
   $library_dialog.classList.add('hidden');
   $container.classList.remove('blurred');
 }

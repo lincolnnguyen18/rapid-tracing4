@@ -45,13 +45,14 @@ html, body {
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  padding: 7px;
+  border-radius: 7px;
+  background-color: black;
 }
 
 #modes .selected-mode {
   color: black;
   background-color: white;
-  padding: 7px;
-  border-radius: 7px;
   font-weight: bold;
 }
 
@@ -65,7 +66,11 @@ canvas {
 }
 
 #picture {
-  
+  height: 80vh;
+  max-width: 90vw;
+  margin: 0 auto;
+  margin-top: 20px;
+  display: block;
 }
 
 :not(canvas) {

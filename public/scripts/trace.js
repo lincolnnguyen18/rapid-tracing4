@@ -6,21 +6,57 @@ window.timer_interval = null;
 window.waiting_for_chart_to_close = false;
 window.final_seconds = null;
 
+let current_mode_button = $outline_mode_button;
+
 const get_time_string_from_seconds = (seconds) => {
   const padded_seconds = seconds % 60 < 10 ? '0' + seconds % 60 : seconds % 60;
   return Math.floor(seconds / 60) + ':' + padded_seconds;
 }
 
-// router.get('/get_picture_last_timerecord', isLoggedIn, function (req, res) {
-//   const { picture_id } = req.query;
-//   conn.execute("CALL get_picture_last_timerecord(?, ?)", [req.id, picture_id], function(err, result) {
-//     if (err) {
-//       res.send({ error: 'Could not get picture last time record.' });
-//     } else {
-//       res.send(result[0]);
-//     }
-//   });
-// });
+const update_picture = () => {
+  const { filename, extension } = shuffled[iteration];
+  let mode = null;
+  switch (current_mode_button) {
+    case $original_mode_button:
+      mode = 'original';
+      break;
+    case $outline_mode_button:
+      mode = 'outline';
+      break;
+    case $details_mode_button:
+      mode = 'details';
+      break;
+  }
+  const path = `/shared/${user_id}/library/${filename}/${mode}.${extension}`;
+  $picture.src = path;
+}
+
+$original_mode_button.onclick = () => {
+  if (current_mode_button === $original_mode_button)
+    return;
+  current_mode_button.classList.remove('selected-mode');
+  current_mode_button = $original_mode_button;
+  current_mode_button.classList.add('selected-mode');
+  update_picture();
+}
+
+$outline_mode_button.onclick = () => {
+  if (current_mode_button === $outline_mode_button)
+    return;
+  current_mode_button.classList.remove('selected-mode');
+  current_mode_button = $outline_mode_button;
+  current_mode_button.classList.add('selected-mode');
+  update_picture();
+}
+
+$details_mode_button.onclick = () => {
+  if (current_mode_button === $details_mode_button)
+    return;
+  current_mode_button.classList.remove('selected-mode');
+  current_mode_button = $details_mode_button;
+  current_mode_button.classList.add('selected-mode');
+  update_picture();
+}
 
 const update_right_time = () => {
   clear_canvas();
@@ -55,13 +91,16 @@ $controls_start_button.onclick = () => {
         $chart_button.classList.remove('disabled');
         console.log(shuffled);
         update_right_time();
+        update_picture();
       }
       timer_interval = setInterval(() => {
-        seconds_since_start++;
-        $left_time.innerHTML = get_time_string_from_seconds(seconds_since_start);
-        console.log(`final_seconds: ${final_seconds}`);
-        if (final_seconds) {
-          $progress.value = seconds_since_start / final_seconds * 100;
+        if (!paused) {
+          seconds_since_start++;
+          $left_time.innerHTML = get_time_string_from_seconds(seconds_since_start);
+          console.log(`final_seconds: ${final_seconds}`);
+          if (final_seconds) {
+            $progress.value = seconds_since_start / final_seconds * 100;
+          }
         }
       }, 1000);
     });
@@ -100,6 +139,7 @@ $controls_done_button.addEventListener('click', () => {
       iteration = 0;
     }
     update_right_time();
+    update_picture();
   });
 });
 

@@ -2,6 +2,7 @@ import Cookies from '/modules/js.cookie.min.mjs';
 window.Cookies = Cookies;
 window.user_id = Cookies.get('id');
 window.$container = document.querySelectorAll('#container')[0];
+window.paused = false;
 
 window.$upload_dialog = document.querySelectorAll('#upload-dialog')[0];
 window.$upload_dialog_window = document.querySelectorAll('#upload-dialog-window')[0];
@@ -36,7 +37,11 @@ window.$top_region = document.querySelectorAll('#top')[0];
 window.$left_time = document.querySelectorAll('#left-time')[0];
 window.$right_time = document.querySelectorAll('#right-time')[0];
 window.$modes_region = document.querySelectorAll('#modes')[0];
+window.$original_mode_button = document.querySelectorAll('#original-mode')[0];
+window.$outline_mode_button = document.querySelectorAll('#outline-mode')[0];
+window.$details_mode_button = document.querySelectorAll('#details-mode')[0];
 window.$progress = document.querySelectorAll('#progress')[0];
+window.$picture = document.querySelectorAll('#picture')[0];
 
 window.$controls_start_button = document.querySelectorAll('#bottom-left > span.start-button')[0];
 window.$controls_done_button = document.querySelectorAll('#bottom-left > span.done-button')[0];
