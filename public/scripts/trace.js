@@ -23,6 +23,7 @@ const get_time_string_from_seconds = (seconds) => {
 // });
 
 const update_right_time = () => {
+  clear_canvas();
   fetch(`/api/get-picture-last-timerecord?picture_id=${shuffled[iteration].id}`)
   .then(res => res.json())
   .then(json => {
