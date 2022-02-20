@@ -147,9 +147,10 @@ router.get('/get-picture-last-timerecord', isLoggedIn, function (req, res) {
     if (err) {
       console.log(err);
       res.send({ error: 'Could not get picture last time record.' });
-    } else {
-      console.log(result[0]);
+    } else if (result && result[0] && result[0][0]) {
       res.send(result[0][0]);
+    } else {
+      res.send({ error: 'Could not get picture last time record.' });
     }
   });
 });
