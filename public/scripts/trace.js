@@ -4,10 +4,37 @@ window.iteration = 0;
 window.seconds_since_start = 0;
 window.timer_interval = null;
 window.waiting_for_chart_to_close = false;
+window.final_seconds = null;
 
 const get_time_string_from_seconds = (seconds) => {
   const padded_seconds = seconds % 60 < 10 ? '0' + seconds % 60 : seconds % 60;
   return Math.floor(seconds / 60) + ':' + padded_seconds;
+}
+
+// router.get('/get_picture_last_timerecord', isLoggedIn, function (req, res) {
+//   const { picture_id } = req.query;
+//   conn.execute("CALL get_picture_last_timerecord(?, ?)", [req.id, picture_id], function(err, result) {
+//     if (err) {
+//       res.send({ error: 'Could not get picture last time record.' });
+//     } else {
+//       res.send(result[0]);
+//     }
+//   });
+// });
+
+const update_right_time = () => {
+  fetch(`/api/get-picture-last-timerecord?picture_id=${shuffled[iteration].id}`)
+  .then(res => res.json())
+  .then(json => {
+    console.log(json);
+    final_seconds = json.seconds;
+    if (final_seconds) {
+      $right_time.classList.remove('invisible');
+      $right_time.innerHTML = get_time_string_from_seconds(final_seconds);
+    } else {
+      $right_time.classList.add('invisible');
+    }
+  });
 }
   
 $controls_start_button.onclick = () => {
@@ -26,20 +53,19 @@ $controls_start_button.onclick = () => {
         iteration = 0;
         $chart_button.classList.remove('disabled');
         console.log(shuffled);
-        if (shuffled[0].seconds) {
-          $right_time.classList.remove('invisible');
-          $right_time.innerHTML = get_time_string_from_seconds(shuffled[0].seconds);
-        }
+        update_right_time();
       }
       timer_interval = setInterval(() => {
         seconds_since_start++;
         $left_time.innerHTML = get_time_string_from_seconds(seconds_since_start);
-        if (shuffled[0].seconds) {
-          $progress.value = seconds_since_start / shuffled[0].seconds;
+        console.log(`final_seconds: ${final_seconds}`);
+        if (final_seconds) {
+          $progress.value = seconds_since_start / final_seconds * 100;
         }
       }, 1000);
     });
   } else {
+    $progress.value = 0;
     $controls_start_button.innerHTML = 'Start';
     $controls_done_button.classList.add('disabled');
     $top_region.classList.add('invisible');
@@ -72,6 +98,7 @@ $controls_done_button.addEventListener('click', () => {
     if (iteration >= shuffled.length) {
       iteration = 0;
     }
+    update_right_time();
   });
 });
 
@@ -79,6 +106,7 @@ window.reset_timer = () => {
   clearInterval(timer_interval);
   seconds_since_start = 0;
   $left_time.innerHTML = '0:00';
+  $progress.value = 0;
 }
 
 window.start_timer = () => {
@@ -86,6 +114,7 @@ window.start_timer = () => {
     seconds_since_start++;
     const padded_seconds = seconds_since_start % 60 < 10 ? '0' + seconds_since_start % 60 : seconds_since_start % 60;
     $left_time.innerHTML = `${Math.floor(seconds_since_start / 60)}:${padded_seconds}`;
+    $progress.value = seconds_since_start / final_seconds * 100;
   }, 1000);
 }
 

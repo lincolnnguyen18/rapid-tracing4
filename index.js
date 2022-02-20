@@ -140,6 +140,20 @@ router.get('/get-pictures', isLoggedIn, function (req, res) {
   });
 });
 
+router.get('/get-picture-last-timerecord', isLoggedIn, function (req, res) {
+  const { picture_id } = req.query;
+  console.log(picture_id);
+  conn.execute("CALL get_picture_last_timerecord(?, ?)", [req.id, picture_id], function(err, result) {
+    if (err) {
+      console.log(err);
+      res.send({ error: 'Could not get picture last time record.' });
+    } else {
+      console.log(result[0]);
+      res.send(result[0][0]);
+    }
+  });
+});
+
 // time record stuff
 router.post('/add-time-record', isLoggedIn, function (req, res) {
   let { seconds, picture_id } = req.body;
