@@ -44,6 +44,10 @@ function drawOnCanvas (stroke) {
 
 for (const ev of ["touchstart", "mousedown"]) {
   canvas.addEventListener(ev, function (e) {
+    console.log(e.touches);
+    if (e.touches && e.touches.length > 1) {
+      return
+    }
     let pressure = 0.1;
     let x, y;
     if (e.touches && e.touches[0] && typeof e.touches[0]["force"] !== "undefined") {
@@ -70,6 +74,10 @@ for (const ev of ["touchstart", "mousedown"]) {
 
 for (const ev of ['touchmove', 'mousemove']) {
   canvas.addEventListener(ev, function (e) {
+    console.log(e.touches);
+    if (e.touches && e.touches.length > 1) {
+      return
+    }
     if (!isMousedown) return
     e.preventDefault()
 
@@ -97,6 +105,10 @@ for (const ev of ['touchmove', 'mousemove']) {
 
 for (const ev of ['touchend', 'touchleave', 'mouseup']) {
   canvas.addEventListener(ev, function (e) {
+    console.log(e.touches);
+    if (e.touches && e.touches.length > 1) {
+      return
+    }
     let pressure = 0.1;
     let x, y;
 

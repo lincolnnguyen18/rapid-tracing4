@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="/styling/trace.css">
     <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
   </head>
   <body>
     <div id="timerecord-chart-dialog" class="dialog hidden">
@@ -28,8 +30,8 @@
         <div class="images hidden">
         </div>
         <div class="buttons">
-          <span class="material-icons-round delete-button disabled">delete</span>
-          <span class="close-button">Close</span>
+          <span class="material-icons-round delete-button disabled button-pointer">delete</span>
+          <span class="close-button button-pointer">Close</span>
         </div>
       </div>
     </div>
@@ -55,14 +57,14 @@
         <label class="dialog-top" for="upload-dialog-input">
           <div id="upload-dialog-placeholder">
             <span class="material-icons-round" id="upload-dialog-window-icon">image</span>
-            <span class="placeholder-text">Drag and drop a picture here.<br />Or click here to select a picture to upload.</span>
+            <span class="placeholder-text">Drag and drop a picture here.<br />Click here to select a picture to upload.<br />Press ctrl/command + v to paste.</span>
             <input name="picture" type="file" id="upload-dialog-input" accept="image/*" class="hidden">
           </div>
           <img id="upload-dialog-window-image" class="hidden" src="">
         </label>
         <div class="dialog-bottom">
           <div class="left">
-            <span class="material-icons-round invert">invert_colors</span>
+            <!-- <span class="material-icons-round invert">invert_colors</span> -->
           </div>
           <div class="buttons">
             <span id="upload-dialog-cancel-button">Cancel</span>
@@ -90,12 +92,13 @@
         <span class="material-icons-round" id="upload-button">file_upload</span>
         <span class="material-icons-round" id="pictures-button">photo_library</span>
         <span class="material-icons-round disabled" id="chart-button">trending_up</span>
-        <span class="material-icons-round" id="delete-button">delete</span>
+        <span class="material-icons-round disabled" id="visible-button">visibility</span>
+        <span class="material-icons-round" id="account-button">schedule</span>
         <span class="material-icons-round" id="logout-button">logout</span>
       </div>
+      <img id="picture">
     </div>
     <canvas></canvas>
-    <img id="picture">
     <script src="/modules/lodash.min.js"></script>
     <script type="module" src="/scripts/trace_global.js"></script>
     <script type="module" src="/scripts/trace_upload_dialog.js"></script>
