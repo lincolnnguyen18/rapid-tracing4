@@ -1,4 +1,4 @@
-# export FLASK_APP=app && export FLASK_ENV=development && python3 -m flask run -h localhost -p 3001
+# export FLASK_APP=app && export FLASK_ENV=development && python3 -m flask run -h localhost -p 8001
 
 from flask import Flask, request
 from flask import jsonify
